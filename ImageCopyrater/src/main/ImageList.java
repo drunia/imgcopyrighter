@@ -11,7 +11,7 @@ import javax.swing.JLabel;
 import javax.swing.JList;
 
 public class ImageList extends JList<JLabel> {
-	private static final long serialVersionUID = 146L;
+	private static final long serialVersionUID = 14699L;
 
 	/**
 	 * Default constructor
