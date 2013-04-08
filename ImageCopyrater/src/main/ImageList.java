@@ -1,6 +1,5 @@
 package main;
 
-import java.awt.Color;
 import java.awt.Component;
 import java.awt.Image;
 import java.io.File;
@@ -11,7 +10,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JList;
 
-public class ImageList extends JList {
+public class ImageList extends JList<JLabel> {
 	private static final long serialVersionUID = 1L;
 
 	/**
@@ -43,7 +42,7 @@ class ILCellRenderer extends DefaultListCellRenderer {
 	private static final long serialVersionUID = 1L;
 	
 	@Override
-	public Component getListCellRendererComponent(JList list, Object value,
+	public Component getListCellRendererComponent(JList<?> list, Object value,
 			int index, boolean isSelected, boolean cellHasFocus) {
 		JLabel listElement = (JLabel) value;
 		ImageIcon icon = new ImageIcon(listElement.getText());
