@@ -22,7 +22,6 @@ public class ImageCopyrighter extends JFrame {
 	private JTextField textField;
 	private ImageList imgList;
 	private static final long serialVersionUID = 1453023172562886029L;
-	private Font font;
 	
 	/**
 	 * @param args
