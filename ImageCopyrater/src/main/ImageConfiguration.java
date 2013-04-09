@@ -17,7 +17,7 @@ import javax.imageio.ImageIO;
  * @author druni@
  *
  */
-public class ImgConfiguration {
+public class ImageConfiguration {
 	private Font font;
 	private int orientation;
 	private String text;
@@ -35,9 +35,9 @@ public class ImgConfiguration {
 	/**
 	 * Default constructor
 	 * @param logo - Image
-	 * @param orientationmn - ImgConfiguration.ORIENTATION_XXXXXXXXX
+	 * @param orientation - ImgConfiguration.ORIENTATION_XXXXXXXXX
 	 */
-	public ImgConfiguration(Image logo, int orientation) {
+	public ImageConfiguration(Image logo, int orientation) {
 		super();
 		this.logo = (logo == null) ? false : true; 
 	}
