@@ -30,7 +30,9 @@ public class ImageCopyrighter extends JFrame {
 	public static void main(String[] args) {
 		ImageCopyrighter mf = new ImageCopyrighter();
 		mf.setVisible(true);
-		File[] files = {new File("D:/1.jpg"), new File("d:/DSC_0034.JPG")};
+		ImageFileChooser ifc = new ImageFileChooser();
+		ifc.showOpenDialog(null);
+		File[] files = ifc.getSelectedFiles();
 		mf.doIt(files);
 		
 	}

@@ -5,7 +5,7 @@ import java.io.File;
 import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileFilter;
 
-public class ImageFileChoser extends JFileChooser {
+public class ImageFileChooser extends JFileChooser {
 	/**
 	 * For serialization
 	 */
@@ -26,6 +26,7 @@ public class ImageFileChoser extends JFileChooser {
 		 */
 		@Override
 		public boolean accept(File f) {
+			if (f.isDirectory()) return true;
 			for (int i = 0; i < exts.length; i++) {
 				if (f.getName().toLowerCase().endsWith(exts[i])) 
 					return true;
@@ -46,7 +47,7 @@ public class ImageFileChoser extends JFileChooser {
 	/**
 	 * Default constructor
 	 */
-	public ImageFileChoser() {
+	public ImageFileChooser() {
 		super();
 		setFileFilter(new ImageFilter());
 	}
