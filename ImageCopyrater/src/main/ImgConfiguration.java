@@ -8,8 +8,10 @@ import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Image;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
 
-import javax.swing.ImageIcon;
+import javax.imageio.ImageIO;
 
 /**
  * @author druni@
@@ -19,7 +21,7 @@ public class ImgConfiguration {
 	private Font font;
 	private int orientation;
 	private String text;
-	private Image img;
+	private BufferedImage logoImg;
 	private boolean logo;
 	
 	public static final int ORIENTATION_TOPLEFT      = 0;
@@ -61,8 +63,8 @@ public class ImgConfiguration {
 	/**
 	 * Set copyright logo
 	 */
-	public void setLogo(Image img) {
-		this.img = img;
+	public void setLogo(BufferedImage img) {
+		this.logoImg = img;
 	}
 
 	/**
@@ -78,7 +80,8 @@ public class ImgConfiguration {
 	 * Calculate text & logo orientation
 	 * @return Dimension (X, Y) position
 	 */
-	public Dimension getOrientation(Graphics g) {
+	public Dimension getOrientation(BufferedImage bimg) {
+		Graphics g = bimg.getGraphics();
 		FontMetrics fm = g.getFontMetrics(font);
 		int textWidth = fm.stringWidth(text);
 		int textHeight = fm.getHeight();
@@ -86,8 +89,8 @@ public class ImgConfiguration {
 		
 		//get Y text center by logo
 		if (logo) {
-			textWidth += img.getWidth(null) + 10; // 10 px space logo<->text
-			textHeight = (int) (img.getHeight(null) / 2) - (textHeight / 2);
+			textWidth += logoImg.getWidth(null) + 10; // 10 px space logo<->text
+			textHeight = (int) (logoImg.getHeight(null) / 2) - (textHeight / 2);
 		}
 		
 		//Calculate orientation
@@ -97,11 +100,13 @@ public class ImgConfiguration {
 				y = 0;
 				break;
 			case ORIENTATION_TOPCENTER:
-				x = (int) (g.getClipBounds().width / 2) - (textWidth / 2); 
+				x = (int) (bimg.getWidth() / 2) - (textWidth / 2); 
 				y = 0;
+				break;
 			case ORIENTATION_TOPRIGHT:
-				x = g.getClipBounds().width - textWidth;
+				x = bimg.getWidth() - textWidth;
 				y = 0;
+				break;
 		}
 		
 		return new Dimension(x, y);
@@ -121,8 +126,12 @@ public class ImgConfiguration {
 	 * @return Image
 	 */
 	public Image getImg() {
-		if (img == null) 
-			img = new ImageIcon(getClass().getResource("/res/def_logo.png")).getImage();
-		return img;
+		if (logoImg == null)
+			try {
+				logoImg = ImageIO.read(getClass().getResource("/res/def_logo.png").openStream());
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		return logoImg;
 	}
 }

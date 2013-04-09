@@ -3,6 +3,7 @@ package main;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
+import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -34,8 +35,11 @@ public class ImageCopyrighter extends JFrame {
 		
 	}
 	
+	/**
+	 * Default constructor
+	 */
 	public ImageCopyrighter() {
-		super("Copyright creator by drunia");
+		super("ImageCopyright by drunia");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setSize(600, 400);
 		setLocationRelativeTo(null);
@@ -53,8 +57,13 @@ public class ImageCopyrighter extends JFrame {
 	 */
 	public void doIt(File[] files) {
 		imgList.setElements(files);
-		for (int i = 0; i < files.length; i++) {
-			
+		for (int i = 0; i < files.length-1; i++) {
+			try {
+				drawCopyRight(ImageIO.read(files[i]));
+			} catch (IOException e) {
+				
+				e.printStackTrace();
+			}
 		}
 	}
 	
@@ -62,9 +71,12 @@ public class ImageCopyrighter extends JFrame {
 	 * Draw text method
 	 * @param g
 	 */
-	private void drawCopyRight(Graphics g) {
+	private void drawCopyRight(BufferedImage img) {
+		Graphics g = img.getGraphics();
 		g.setColor(Color.RED);
-		g.drawString(textField.getText(), 0, 20);
+		g.drawString("", 0, 20);
+		System.out.println(img.getWidth());
+		
 	}
 
 }
