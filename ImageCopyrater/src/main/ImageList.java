@@ -10,8 +10,8 @@ import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JList;
 
-public class ImageList extends JList<JLabel> {
-	private static final long serialVersionUID = 14699L;
+public class ImageList extends JList {
+	private static final long serialVersionUID = 1L;
 
 	/**
 	 * Default constructor
@@ -42,7 +42,7 @@ class ILCellRenderer extends DefaultListCellRenderer {
 	private static final long serialVersionUID = 1L;
 	
 	@Override
-	public Component getListCellRendererComponent(JList<?> list, Object value,
+	public Component getListCellRendererComponent(JList list, Object value,
 			int index, boolean isSelected, boolean cellHasFocus) {
 		JLabel listElement = (JLabel) value;
 		ImageIcon icon = new ImageIcon(listElement.getText());
