@@ -59,8 +59,9 @@ public class ImageCopyrighter extends JFrame {
 	 */
 	public void doIt(File[] files) {
 		imgList.setElements(files);
-		for (int i = 0; i < files.length-1; i++) {
+		for (int i = 0; i < files.length; i++) {
 			try {
+				System.out.println(files[i].getAbsolutePath());
 				drawCopyRight(ImageIO.read(files[i]));
 			} catch (IOException e) {
 				
@@ -74,10 +75,11 @@ public class ImageCopyrighter extends JFrame {
 	 * @param g
 	 */
 	private void drawCopyRight(BufferedImage img) {
-		Graphics g = img.getGraphics();
-		g.setColor(Color.RED);
-		g.drawString("", 0, 20);
-		System.out.println(img.getWidth());
+		//Graphics g = img.getGraphics();
+		
+		//g.setColor(Color.RED);
+		//g.drawString("", 0, 20);
+		//System.out.println(img.getWidth());
 		
 	}
 

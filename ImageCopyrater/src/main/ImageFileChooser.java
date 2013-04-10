@@ -49,6 +49,7 @@ public class ImageFileChooser extends JFileChooser {
 	 */
 	public ImageFileChooser() {
 		super();
+		setMultiSelectionEnabled(true);
 		setFileFilter(new ImageFilter());
 	}
 

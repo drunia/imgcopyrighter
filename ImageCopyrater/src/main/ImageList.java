@@ -46,7 +46,7 @@ class ILCellRenderer extends DefaultListCellRenderer {
 			int index, boolean isSelected, boolean cellHasFocus) {
 		JLabel listElement = (JLabel) value;
 		ImageIcon icon = new ImageIcon(listElement.getText());
-		icon = new ImageIcon(icon.getImage().getScaledInstance(48, -1, Image.SCALE_DEFAULT));
+		icon = new ImageIcon(icon.getImage().getScaledInstance(48, 48, Image.SCALE_DEFAULT));
 		listElement.setIcon(icon);
 		listElement.setToolTipText(listElement.getText());
 		listElement.setBorder(BorderFactory.createRaisedBevelBorder());
