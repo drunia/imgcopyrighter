@@ -15,6 +15,7 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 
 
@@ -47,7 +48,9 @@ public class ImageCopyrighter extends JFrame {
 		setLocationRelativeTo(null);
 	
 		imgList = new ImageList();
-		add(imgList);
+		imgList.setImgIconed(true);
+		JScrollPane spane = new JScrollPane(imgList);
+		add(spane);
 		
 		JPanel cPanel = new JPanel(); 
 		cPanel.setLayout(new BoxLayout(cPanel, BoxLayout.Y_AXIS));
@@ -63,8 +66,7 @@ public class ImageCopyrighter extends JFrame {
 			try {
 				System.out.println(files[i].getAbsolutePath());
 				drawCopyRight(ImageIO.read(files[i]));
-			} catch (IOException e) {
-				
+			} catch (IOException e) {		
 				e.printStackTrace();
 			}
 		}
