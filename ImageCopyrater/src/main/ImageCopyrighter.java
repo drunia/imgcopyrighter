@@ -3,14 +3,12 @@ package main;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
-import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 
 import javax.imageio.ImageIO;
 import javax.swing.BoxLayout;
-import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -20,21 +18,21 @@ import javax.swing.JTextField;
 
 
 public class ImageCopyrighter extends JFrame {
+	private static final long serialVersionUID = 1L;
 	private JButton startButton;
 	private JTextField textField;
 	private ImageList imgList;
-	private static final long serialVersionUID = 1453023172562886029L;
 	
 	/**
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		ImageCopyrighter mf = new ImageCopyrighter();
-		mf.setVisible(true);
-		ImageFileChooser ifc = new ImageFileChooser();
+		ImageCopyrighter ic = new ImageCopyrighter();
+		ic.setVisible(true);
+		ImageFileChooser ifc = new ImageFileChooser(null);
 		ifc.showOpenDialog(null);
 		File[] files = ifc.getSelectedFiles();
-		mf.doIt(files);
+		ic.doIt(files);
 		
 	}
 	
@@ -48,7 +46,7 @@ public class ImageCopyrighter extends JFrame {
 		setLocationRelativeTo(null);
 	
 		imgList = new ImageList();
-		imgList.setImgIconed(true);
+		imgList.setImgIconed(false);
 		JScrollPane spane = new JScrollPane(imgList);
 		add(spane);
 		
@@ -61,11 +59,18 @@ public class ImageCopyrighter extends JFrame {
 	 * @param files - array of selected file/s
 	 */
 	public void doIt(File[] files) {
-		imgList.setElements(files);
+		try {
+			imgList.setElements(files);
+		} catch (IOException e) {e.printStackTrace();}
 		for (int i = 0; i < files.length; i++) {
 			try {
 				System.out.println(files[i].getAbsolutePath());
-				drawCopyRight(ImageIO.read(files[i]));
+				File saveFile = new File(
+						files[i].getParent() + "/ImageCopyrighter/" + files[i].getName());
+				saveFile.mkdirs();
+				BufferedImage img = ImageIO.read(files[i]); 
+				drawCopyRight(img);
+				ImageIO.write(img, "png", saveFile);
 			} catch (IOException e) {		
 				e.printStackTrace();
 			}
@@ -77,12 +82,11 @@ public class ImageCopyrighter extends JFrame {
 	 * @param g
 	 */
 	private void drawCopyRight(BufferedImage img) {
-		//Graphics g = img.getGraphics();
-		
-		//g.setColor(Color.RED);
-		//g.drawString("", 0, 20);
-		//System.out.println(img.getWidth());
-		
+		Graphics g = img.getGraphics();
+		int fontSize = 20 * (((img.getHeight() * img.getWidth()) / 1000000) + 1);
+		g.setFont(new Font(null, 0, fontSize));
+		g.setColor(Color.RED);
+		g.drawString("drunia", 0, 20);
 	}
 
 }

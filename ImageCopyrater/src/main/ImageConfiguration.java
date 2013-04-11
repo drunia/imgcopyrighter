@@ -30,7 +30,7 @@ public class ImageConfiguration {
 	public static final int ORIENTATION_BOTTOMLEFT   = 3;
 	public static final int ORIENTATION_BOTTOMCENTER = 4;
 	public static final int ORIENTATION_BOTTOMRIGHT  = 5;
-	public static final int ORIENTATION_CENTER 		 = 6;
+	public static final int ORIENTATION_CENTER		 = 6;
 	
 	/**
 	 * Default constructor
@@ -80,12 +80,16 @@ public class ImageConfiguration {
 	 * Calculate text & logo orientation
 	 * @return Dimension (X, Y) position
 	 */
-	public Dimension getOrientation(BufferedImage bimg) {
+	public Dimension getOrientation(BufferedImage bimg) {		
+		//Calculate font
+		int fontSize = font.getSize() * (((bimg.getHeight() * bimg.getWidth()) / 1000000) + 1);
+		font = new Font(font.getName(), font.getStyle(), fontSize);
 		Graphics g = bimg.getGraphics();
 		FontMetrics fm = g.getFontMetrics(font);
+		
 		int textWidth = fm.stringWidth(text);
 		int textHeight = fm.getHeight();
-		int x = 0, y = 0;
+		int x = 0, y = 0;	
 		
 		//get Y text center by logo
 		if (logo) {
@@ -96,16 +100,24 @@ public class ImageConfiguration {
 		//Calculate orientation
 		switch (orientation) {
 			case ORIENTATION_TOPLEFT:
-				x = 0;
-				y = 0;
+				x = 20;
+				y = 20;
 				break;
 			case ORIENTATION_TOPCENTER:
 				x = (int) (bimg.getWidth() / 2) - (textWidth / 2); 
 				y = 0;
 				break;
 			case ORIENTATION_TOPRIGHT:
-				x = bimg.getWidth() - textWidth;
+				x = bimg.getWidth() - textWidth - 20;
 				y = 0;
+				break;
+			case ORIENTATION_CENTER:
+				break;
+			case ORIENTATION_BOTTOMLEFT:
+				break;
+			case ORIENTATION_BOTTOMCENTER:
+				break;
+			case ORIENTATION_BOTTOMRIGHT:
 				break;
 		}
 		
