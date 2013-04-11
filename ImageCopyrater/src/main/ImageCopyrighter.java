@@ -18,6 +18,7 @@ import javax.swing.JTextField;
 
 
 public class ImageCopyrighter extends JFrame {
+	private final String APP_DIR_NAME = "ImageCopyrighter";
 	private static final long serialVersionUID = 1L;
 	private JButton startButton;
 	private JTextField textField;
@@ -64,13 +65,18 @@ public class ImageCopyrighter extends JFrame {
 		} catch (IOException e) {e.printStackTrace();}
 		for (int i = 0; i < files.length; i++) {
 			try {
-				System.out.println(files[i].getAbsolutePath());
-				File saveFile = new File(
-						files[i].getParent() + "/ImageCopyrighter/" + files[i].getName());
+				File saveFile = new File(files[i].getParent() + "/" + APP_DIR_NAME + "/" + files[i].getName());
+				String ext = saveFile.getName().substring(saveFile.getName().lastIndexOf('.') + 1);
 				saveFile.mkdirs();
+				
+				System.out.println("Source file: " + files[i].getAbsolutePath());
+				System.out.println("Target file: " + saveFile.getAbsolutePath());
+				System.out.println("File type: "  + ext);
+				System.out.println("---");
+				
 				BufferedImage img = ImageIO.read(files[i]); 
 				drawCopyRight(img);
-				ImageIO.write(img, "png", saveFile);
+				ImageIO.write(img, ext, saveFile);
 			} catch (IOException e) {		
 				e.printStackTrace();
 			}
@@ -79,14 +85,14 @@ public class ImageCopyrighter extends JFrame {
 	
 	/**
 	 * Draw text method
-	 * @param g
+	 * @param img - BufferedImage
 	 */
 	private void drawCopyRight(BufferedImage img) {
 		Graphics g = img.getGraphics();
 		int fontSize = 20 * (((img.getHeight() * img.getWidth()) / 1000000) + 1);
 		g.setFont(new Font(null, 0, fontSize));
 		g.setColor(Color.RED);
-		g.drawString("drunia", 0, 20);
+		g.drawString("drunia", 0, 100);
 	}
 
 }
