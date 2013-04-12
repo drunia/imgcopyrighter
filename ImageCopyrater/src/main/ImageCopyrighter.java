@@ -47,7 +47,7 @@ public class ImageCopyrighter extends JFrame {
 		setLocationRelativeTo(null);
 	
 		imgList = new ImageList();
-		imgList.setImgIconed(false);
+		imgList.setImgIconed(true);
 		JScrollPane spane = new JScrollPane(imgList);
 		add(spane);
 		
