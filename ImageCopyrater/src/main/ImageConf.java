@@ -3,11 +3,10 @@
  */
 package main;
 
-import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.FontMetrics;
-import java.awt.Graphics;
 import java.awt.Image;
+import java.awt.Point;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 
@@ -17,7 +16,7 @@ import javax.imageio.ImageIO;
  * @author druni@
  *
  */
-public class ImageConfiguration {
+public class ImageConf {
 	private Font font;
 	private int orientation;
 	private String text;
@@ -37,9 +36,11 @@ public class ImageConfiguration {
 	 * @param logo - Image
 	 * @param orientation - ImgConfiguration.ORIENTATION_XXXXXXXXX
 	 */
-	public ImageConfiguration(Image logo, int orientation) {
+	public ImageConf(BufferedImage logo, int orientation) {
 		super();
 		this.logo = (logo == null) ? false : true; 
+		if (this.logo) setLogo(logo);
+		this.orientation = orientation;
 	}
 	
 	/**
@@ -80,48 +81,61 @@ public class ImageConfiguration {
 	 * Calculate text & logo orientation
 	 * @return Dimension (X, Y) position
 	 */
-	public Dimension getOrientation(BufferedImage bimg) {		
+	public Point getOrientation(BufferedImage bimg) {
+		int imgW = bimg.getWidth();
+		int imgH = bimg.getHeight();
+		
 		//Calculate font
-		int fontSize = font.getSize() * (((bimg.getHeight() * bimg.getWidth()) / 1000000) + 1);
+		int fontSize = font.getSize() * (((imgH * imgW) / 1000000) + 1);
 		font = new Font(font.getName(), font.getStyle(), fontSize);
-		Graphics g = bimg.getGraphics();
-		FontMetrics fm = g.getFontMetrics(font);
+		FontMetrics fm = bimg.getGraphics().getFontMetrics(font);
+		
+		//Calculate indents 1 % from image size
+		int indentX = imgW / 100;
+		int indentY = imgH / 100;
 		
 		int textWidth = fm.stringWidth(text);
 		int textHeight = fm.getHeight();
 		int x = 0, y = 0;	
 		
-		//get Y text center by logo
+		//Get Y text center by logo
 		if (logo) {
-			textWidth += logoImg.getWidth(null) + 10; // 10 px space logo<->text
-			textHeight = (int) (logoImg.getHeight(null) / 2) - (textHeight / 2);
+			textWidth += logoImg.getWidth() + 10; // 10 px space logo<->text
+			textHeight = (logoImg.getHeight() / 2) - (textHeight / 2);
 		}
 		
 		//Calculate orientation
 		switch (orientation) {
 			case ORIENTATION_TOPLEFT:
-				x = 20;
-				y = 20;
+				x = indentX;
+				y = indentY;
 				break;
 			case ORIENTATION_TOPCENTER:
-				x = (int) (bimg.getWidth() / 2) - (textWidth / 2); 
-				y = 0;
+				x = (imgW / 2) - (textWidth / 2); 
+				y = indentY;
 				break;
 			case ORIENTATION_TOPRIGHT:
-				x = bimg.getWidth() - textWidth - 20;
-				y = 0;
+				x = imgW - (textWidth + indentX) ; 
+				y = indentY; 
 				break;
 			case ORIENTATION_CENTER:
+				x = (imgW / 2) - (textWidth / 2); 
+				y = (imgH / 2) - (textHeight / 2); 
 				break;
 			case ORIENTATION_BOTTOMLEFT:
+				x = indentX;
+				y = imgH - (textHeight + indentY);;
 				break;
 			case ORIENTATION_BOTTOMCENTER:
+				x = (imgW / 2) - (textWidth / 2); 
+				y = imgH - (textHeight + indentY);; 
 				break;
 			case ORIENTATION_BOTTOMRIGHT:
+				x = imgW - (textWidth + indentX);
+				y = imgH - (textHeight + indentY);
 				break;
 		}
-		
-		return new Dimension(x, y);
+		return new Point(x, y);
 	}
 
 	/**

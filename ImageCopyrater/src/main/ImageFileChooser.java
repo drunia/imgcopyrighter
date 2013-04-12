@@ -15,7 +15,7 @@ public class ImageFileChooser extends JFileChooser {
 	/**
 	 * Array of assigned extensions
 	 */
-	private String[] exts = {"jpg", "jpeg", "png", "gif"};
+	private String[] exts = {"jpg", "jpeg", "png"};
 	
 	/**
 	 * Class - filter for image extensions
