@@ -121,7 +121,6 @@ class ImageLabel extends JLabel {
 		//KBytes
 		if (imageSize > 1024) {
 			size = imageSize / 1024f;
-			System.out.println("size = " + size);
 			dataName = "KBytes";
 		}
 		//MBytes

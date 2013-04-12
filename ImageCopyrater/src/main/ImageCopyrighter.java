@@ -3,6 +3,7 @@ package main;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
+import java.awt.Point;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -15,6 +16,8 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
+import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
 
 
 public class ImageCopyrighter extends JFrame {
@@ -53,6 +56,11 @@ public class ImageCopyrighter extends JFrame {
 		
 		JPanel cPanel = new JPanel(); 
 		cPanel.setLayout(new BoxLayout(cPanel, BoxLayout.Y_AXIS));
+		
+		//Set Nuimbus LookAndFeel if exist
+		try {
+			UIManager.setLookAndFeel("com.sun.java.swing.plaf.nimbus.NimbusLookAndFeel");
+		} catch (Exception e) {}
 	}
 	
 	/**
@@ -69,11 +77,6 @@ public class ImageCopyrighter extends JFrame {
 				String ext = saveFile.getName().substring(saveFile.getName().lastIndexOf('.') + 1);
 				saveFile.mkdirs();
 				
-				System.out.println("Source file: " + files[i].getAbsolutePath());
-				System.out.println("Target file: " + saveFile.getAbsolutePath());
-				System.out.println("File type: "  + ext);
-				System.out.println("---");
-				
 				BufferedImage img = ImageIO.read(files[i]); 
 				drawCopyRight(img);
 				ImageIO.write(img, ext, saveFile);
@@ -88,11 +91,23 @@ public class ImageCopyrighter extends JFrame {
 	 * @param img - BufferedImage
 	 */
 	private void drawCopyRight(BufferedImage img) {
+		BufferedImage logo = null;
+		try {
+			logo = ImageIO.read(getClass().getResource("/res/def_logo.png").openStream());
+		} catch (IOException e) {
+			
+			e.printStackTrace();
+		}
+		ImageConf iconf = new ImageConf(logo, ImageConf.ORIENTATION_CENTER);
+		iconf.setFont(null, Font.ITALIC, 15);
+		iconf.setText("Example drunia )))");
+		Point coords = iconf.getOrientation(img);
+		
 		Graphics g = img.getGraphics();
-		int fontSize = 20 * (((img.getHeight() * img.getWidth()) / 1000000) + 1);
-		g.setFont(new Font(null, 0, fontSize));
+		g.setFont(iconf.getFont());
 		g.setColor(Color.RED);
-		g.drawString("drunia", 0, 100);
+		g.drawImage(iconf.getImg(), coords.x, coords.y, null);
+		//g.drawString(iconf.getText(), coords.x + iconf.getImg().getWidth(null), coords.y + iconf.getImg().getHeight(null));
 	}
 
 }
