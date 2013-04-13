@@ -6,7 +6,6 @@ import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.Point;
 import java.awt.image.BufferedImage;
-import java.awt.image.ImageObserver;
 import java.io.File;
 import java.io.IOException;
 
@@ -106,17 +105,17 @@ public class ImageCopyrighter extends JFrame {
 		}
 		
 		iconf.setText("ImageCopyright Java");
-		iconf.setFont(null, Font.PLAIN, 20);
-		//iconf.setLogo(logo);
+		iconf.setFont(null, Font.PLAIN, 14);
+		iconf.setLogo(logo);
 		
 		Point tc = iconf.getTextPoint();
-		//Point lc = iconf.getLogoPoint();
+		Point lc = iconf.getLogoPoint();
 		
 		Graphics g = img.getGraphics();
 		g.setFont(iconf.getFont());
 		g.setColor(Color.RED);
 		
-		//g.drawImage(logo, lc.x, lc.y, null);
+		g.drawImage(logo, lc.x, lc.y, null);
 		g.drawString(iconf.getText(), tc.x, tc.y);
 		
 		System.out.println("textPoint = " + tc);

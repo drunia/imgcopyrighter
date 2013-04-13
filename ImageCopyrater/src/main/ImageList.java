@@ -1,6 +1,8 @@
 package main;
 
+import java.awt.Color;
 import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.Image;
 import java.io.File;
 import java.io.IOException;
@@ -11,6 +13,7 @@ import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JList;
+import javax.swing.ListSelectionModel;
 
 public class ImageList extends JList {
 	private static final long serialVersionUID = 1L;
@@ -24,6 +27,7 @@ public class ImageList extends JList {
 		super();
 		setCellRenderer(new ILCellRenderer());
 		setLayoutOrientation(JList.VERTICAL);
+		setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 	}
 	
 	/**
@@ -83,6 +87,10 @@ class ILCellRenderer extends DefaultListCellRenderer {
 	public Component getListCellRendererComponent(JList list, Object value,
 			int index, boolean isSelected, boolean cellHasFocus) {
 		JLabel listElement = (JLabel) value;	
+		if (isSelected) 
+			listElement.setBackground(Color.BLUE);
+		else
+			listElement.setBackground(null);
 		return listElement;
 	}
 }
