@@ -3,6 +3,7 @@ package main;
 import java.io.File;
 import java.util.Arrays;
 
+import javax.imageio.ImageIO;
 import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileFilter;
 
@@ -13,9 +14,9 @@ public class ImageFileChooser extends JFileChooser {
 	private static final long serialVersionUID = 1L;
 	
 	/**
-	 * Array of assigned extensions
+	 * Array of assigned formats
 	 */
-	private String[] exts = {"jpg", "jpeg", "png"};
+	private String[] exts = ImageIO.getWriterFileSuffixes();
 	
 	/**
 	 * Class - filter for image extensions
@@ -40,7 +41,7 @@ public class ImageFileChooser extends JFileChooser {
 		 */
 		@Override
 		public String getDescription() {
-			return "ImageCopyrighter files: " + Arrays.toString(exts);
+			return "ImageCopyright files: " + Arrays.toString(exts);
 		}
 	}
 	

@@ -42,6 +42,7 @@ public class ImageList extends JList {
 			if (isImgIconed()) {
 				image = new ImageIcon(files[i].getAbsolutePath()).getImage();
 				icon = new ImageIcon(image.getScaledInstance(48, 48, Image.SCALE_SMOOTH));
+				image.flush();
 			} else {
 				if (elements[0].getIcon() == null)
 					icon = new ImageIcon(getClass().getResource("/res/image.png"));

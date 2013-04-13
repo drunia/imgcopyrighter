@@ -1,6 +1,3 @@
-/**
- * Configuration class for draw copyright method
- */
 package main;
 
 import java.awt.Font;
@@ -8,21 +5,26 @@ import java.awt.FontMetrics;
 import java.awt.Image;
 import java.awt.Point;
 import java.awt.image.BufferedImage;
-import java.io.IOException;
-
-import javax.imageio.ImageIO;
 
 /**
+ * Class positions calculator
  * @author druni@
- *
  */
 public class ImageConf {
 	private Font font;
+	private Font calcFont;
 	private int orientation;
 	private String text;
 	private BufferedImage logoImg;
-	private boolean logo;
+	private BufferedImage proccessImage;
+	private int textWidth;
+	private int textHeight;
+	private Point logoPoint;
+	private Point textPoint;
 	
+	/**
+	 * Position constants
+	 */
 	public static final int ORIENTATION_TOPLEFT      = 0;
 	public static final int ORIENTATION_TOPCENTER    = 1;
 	public static final int ORIENTATION_TOPRIGHT     = 2;
@@ -35,11 +37,13 @@ public class ImageConf {
 	 * Default constructor
 	 * @param logo - Image
 	 * @param orientation - ImgConfiguration.ORIENTATION_XXXXXXXXX
+	 * @throws Exception - When image is null
 	 */
-	public ImageConf(BufferedImage logo, int orientation) {
+	public ImageConf(BufferedImage processImage, int orientation) throws Exception {
 		super();
-		this.logo = (logo == null) ? false : true; 
-		if (this.logo) setLogo(logo);
+		if (processImage != null)
+			this.proccessImage = processImage;
+		else throw new Exception("Fatal Error Image can not be null!");
 		this.orientation = orientation;
 	}
 	
@@ -51,6 +55,7 @@ public class ImageConf {
 	 */
 	public void setFont(String name, int style, int size) {
 		font = new Font(name, style, size);
+		if (text != null) calculatePositions();
 	}
 	
 	/**
@@ -59,50 +64,53 @@ public class ImageConf {
 	 */
 	public void setText(String text) {
 		this.text = text;
+		if (font != null) calculatePositions();
 	}
 	
 	/**
 	 * Set copyright logo
 	 */
-	public void setLogo(BufferedImage img) {
-		this.logoImg = img;
+	public void setLogo(BufferedImage logo) {
+		logoImg = logo;
+		if (font != null && text != null)
+			calculatePositions();
 	}
 
 	/**
-	 * Return initialized font
-	 * @return
-	 */
-	public Font getFont() {
-		if (font == null) setFont(null, Font.PLAIN, 12);
-		return font;
-	}
-
-	/**
-	 * Calculate text & logo orientation
+	 * Return logo orientation
 	 * @return Dimension (X, Y) position
 	 */
-	public Point getOrientation(BufferedImage bimg) {
-		int imgW = bimg.getWidth();
-		int imgH = bimg.getHeight();
+	public Point getLogoPoint() {
+		return logoPoint;
+	}
+	
+	/**
+	 * Return text orientation
+	 * @return Dimension (X, Y) position
+	 */
+	public Point getTextPoint() {
+		return textPoint;
+	}
+	
+	/**
+	 * Calculate text orientation
+	 */
+	private void calculatePositions() {
+		int imgW = proccessImage.getWidth();
+		int imgH = proccessImage.getHeight();
 		
-		//Calculate font
+		//Calculate font size
 		int fontSize = font.getSize() * (((imgH * imgW) / 1000000) + 1);
-		font = new Font(font.getName(), font.getStyle(), fontSize);
-		FontMetrics fm = bimg.getGraphics().getFontMetrics(font);
+		calcFont = new Font(font.getName(), font.getStyle(), fontSize);
+		FontMetrics fm = proccessImage.getGraphics().getFontMetrics(calcFont);
 		
-		//Calculate indents 1 % from image size
-		int indentX = imgW / 100;
-		int indentY = imgH / 100;
-		
-		int textWidth = fm.stringWidth(text);
-		int textHeight = fm.getHeight();
+		textWidth = fm.stringWidth(text);
+		textHeight = fm.getHeight();
 		int x = 0, y = 0;	
 		
-		//Get Y text center by logo
-		if (logo) {
-			textWidth += logoImg.getWidth() + 10; // 10 px space logo<->text
-			textHeight = (logoImg.getHeight() / 2) - (textHeight / 2);
-		}
+		//Calculate indents 1 % from image size
+		int indentX = (imgW / 100);
+		int indentY = (imgH / 100);
 		
 		//Calculate orientation
 		switch (orientation) {
@@ -115,7 +123,7 @@ public class ImageConf {
 				y = indentY;
 				break;
 			case ORIENTATION_TOPRIGHT:
-				x = imgW - (textWidth + indentX) ; 
+				x = imgW - textWidth; 
 				y = indentY; 
 				break;
 			case ORIENTATION_CENTER:
@@ -124,18 +132,45 @@ public class ImageConf {
 				break;
 			case ORIENTATION_BOTTOMLEFT:
 				x = indentX;
-				y = imgH - (textHeight + indentY);;
+				y = imgH - textHeight;
 				break;
 			case ORIENTATION_BOTTOMCENTER:
 				x = (imgW / 2) - (textWidth / 2); 
-				y = imgH - (textHeight + indentY);; 
+				y = imgH - textHeight;
 				break;
 			case ORIENTATION_BOTTOMRIGHT:
 				x = imgW - (textWidth + indentX);
-				y = imgH - (textHeight + indentY);
+				y = imgH - textHeight;
 				break;
-		}
-		return new Point(x, y);
+		}	
+		
+		if (logoImg == null) {
+			textPoint = new Point(x, y + (textHeight / 2));
+		} else {
+			logoPoint = new Point(x, y);
+			textPoint = new Point(x + logoImg.getWidth(),
+					y + ((logoImg.getHeight() / 2) + (textHeight / 3)));
+			switch (orientation) {
+				case ORIENTATION_TOPRIGHT:
+					logoPoint = new Point(x - logoImg.getWidth(), y);
+					textPoint = new Point(x,
+							logoPoint.y + ((logoImg.getHeight() / 2) + (textHeight / 3)));
+					break;
+				case ORIENTATION_BOTTOMCENTER:
+				case ORIENTATION_BOTTOMRIGHT:
+					y += textHeight;
+					logoPoint = new Point(x - logoImg.getWidth(), y - logoImg.getHeight());
+					textPoint = new Point(x,
+							logoPoint.y + ((logoImg.getHeight() / 2) + (textHeight / 3)));
+					break;
+				case ORIENTATION_BOTTOMLEFT:
+					y += textHeight;
+					logoPoint = new Point(x, y - logoImg.getHeight());
+					textPoint = new Point(x + logoImg.getWidth(),
+							logoPoint.y + ((logoImg.getHeight() / 2) + (textHeight / 3)));
+					break;
+			}
+		}		
 	}
 
 	/**
@@ -143,7 +178,6 @@ public class ImageConf {
 	 * @return String
 	 */
 	public String getText() {
-		if (text == null) text = "ImageCopyright by drunia";
 		return text;
 	}
 
@@ -151,13 +185,16 @@ public class ImageConf {
 	 * Return copyright logo
 	 * @return Image
 	 */
-	public Image getImg() {
-		if (logoImg == null)
-			try {
-				logoImg = ImageIO.read(getClass().getResource("/res/def_logo.png").openStream());
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
+	public Image getLogo() {
 		return logoImg;
 	}
+	
+	/**
+	 * Return size-calculated font
+	 * @return
+	 */
+	public Font getFont() {
+		return calcFont;
+	}
+
 }

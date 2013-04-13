@@ -3,8 +3,10 @@ package main;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
+import java.awt.Image;
 import java.awt.Point;
 import java.awt.image.BufferedImage;
+import java.awt.image.ImageObserver;
 import java.io.File;
 import java.io.IOException;
 
@@ -26,7 +28,7 @@ public class ImageCopyrighter extends JFrame {
 	private JButton startButton;
 	private JTextField textField;
 	private ImageList imgList;
-	
+	static int a;
 	/**
 	 * @param args
 	 */
@@ -80,6 +82,7 @@ public class ImageCopyrighter extends JFrame {
 				BufferedImage img = ImageIO.read(files[i]); 
 				drawCopyRight(img);
 				ImageIO.write(img, ext, saveFile);
+				//img.flush();
 			} catch (IOException e) {		
 				e.printStackTrace();
 			}
@@ -92,22 +95,33 @@ public class ImageCopyrighter extends JFrame {
 	 */
 	private void drawCopyRight(BufferedImage img) {
 		BufferedImage logo = null;
+		ImageConf iconf = null;
 		try {
 			logo = ImageIO.read(getClass().getResource("/res/def_logo.png").openStream());
+			iconf = new ImageConf(img, a++);
 		} catch (IOException e) {
-			
+			e.printStackTrace();
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		ImageConf iconf = new ImageConf(logo, ImageConf.ORIENTATION_CENTER);
-		iconf.setFont(null, Font.ITALIC, 15);
-		iconf.setText("Example drunia )))");
-		Point coords = iconf.getOrientation(img);
+		
+		iconf.setText("ImageCopyright Java");
+		iconf.setFont(null, Font.PLAIN, 20);
+		//iconf.setLogo(logo);
+		
+		Point tc = iconf.getTextPoint();
+		//Point lc = iconf.getLogoPoint();
 		
 		Graphics g = img.getGraphics();
 		g.setFont(iconf.getFont());
 		g.setColor(Color.RED);
-		g.drawImage(iconf.getImg(), coords.x, coords.y, null);
-		//g.drawString(iconf.getText(), coords.x + iconf.getImg().getWidth(null), coords.y + iconf.getImg().getHeight(null));
+		
+		//g.drawImage(logo, lc.x, lc.y, null);
+		g.drawString(iconf.getText(), tc.x, tc.y);
+		
+		System.out.println("textPoint = " + tc);
+		
+		System.out.println("Done");
 	}
 
 }
