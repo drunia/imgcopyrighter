@@ -154,7 +154,7 @@ public class ImageCopyrighter extends JFrame {
 		
 		System.out.println("textPoint = " + tc);
 		
-		System.out.println("Done");
+		System.out.println("Done!");
 	}
 
 }
