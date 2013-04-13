@@ -39,24 +39,22 @@ public class ImageConf {
 	 * @param orientation - ImgConfiguration.ORIENTATION_XXXXXXXXX
 	 * @throws Exception - When image is null
 	 */
-	public ImageConf(BufferedImage processImage, int orientation) throws Exception {
+	public ImageConf(BufferedImage processImage, int orientation) {
 		super();
-		if (processImage != null)
-			this.proccessImage = processImage;
-		else throw new Exception("Fatal Error Image can not be null!");
+		this.proccessImage = processImage;
 		this.orientation = orientation;
 	}
 	
+	
 	/**
-	 * Set copyright font
-	 * @param name - Font name String
-	 * @param style - Font style (Font.BOLD/ITALIC) int
-	 * @param size - Font size int
+	 * Set copyright font 
+	 * @param font - Font
 	 */
-	public void setFont(String name, int style, int size) {
-		font = new Font(name, style, size);
+	public void setFont(Font font) {
+		this.font = font;
 		if (text != null) calculatePositions();
 	}
+
 	
 	/**
 	 * Set copyright text
@@ -80,7 +78,7 @@ public class ImageConf {
 	 * Return logo orientation
 	 * @return Dimension (X, Y) position
 	 */
-	public Point getLogoPoint() {
+	public Point getLogoCoords() {
 		return logoPoint;
 	}
 	
@@ -88,7 +86,7 @@ public class ImageConf {
 	 * Return text orientation
 	 * @return Dimension (X, Y) position
 	 */
-	public Point getTextPoint() {
+	public Point getTextCoords() {
 		return textPoint;
 	}
 	
@@ -196,5 +194,4 @@ public class ImageConf {
 	public Font getFont() {
 		return calcFont;
 	}
-
 }

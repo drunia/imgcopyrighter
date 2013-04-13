@@ -1,9 +1,10 @@
 package main;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
-import java.awt.Image;
+import java.awt.GridLayout;
 import java.awt.Point;
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -18,7 +19,8 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.UIManager;
-import javax.swing.UnsupportedLookAndFeelException;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 
 
 public class ImageCopyrighter extends JFrame {
@@ -27,7 +29,11 @@ public class ImageCopyrighter extends JFrame {
 	private JButton startButton;
 	private JTextField textField;
 	private ImageList imgList;
+	private ImagePreview iPview;
+	
 	static int a;
+	
+	
 	/**
 	 * @param args
 	 */
@@ -50,15 +56,45 @@ public class ImageCopyrighter extends JFrame {
 		setSize(600, 400);
 		setLocationRelativeTo(null);
 	
+		int horizComponents = 2;
+		JPanel cPanel = new JPanel(); 
+		cPanel.setLayout(new GridLayout(1, horizComponents));
+		
 		imgList = new ImageList();
 		imgList.setImgIconed(true);
 		JScrollPane spane = new JScrollPane(imgList);
-		add(spane);
+		cPanel.add(spane);
 		
-		JPanel cPanel = new JPanel(); 
-		cPanel.setLayout(new BoxLayout(cPanel, BoxLayout.Y_AXIS));
+	    iPview = new ImagePreview();
+	    cPanel.add(iPview);
+	    
+	    add(cPanel, BorderLayout.CENTER);
+	    
+	    //ImageList selection handler
+		imgList.addListSelectionListener(new  ListSelectionListener() {
+			@Override
+			public void valueChanged(ListSelectionEvent e) {
+				ImageList l = (ImageList) e.getSource();
+				ImageLabel lb = (ImageLabel) l.getSelectedValue();
+				File image = lb.getImageFile();
+				BufferedImage img;
+				try {
+					img = ImageIO.read(image);
+					Font f = new Font(null, Font.ITALIC, 25);
+					iPview.setPreview(img, null, f, "Пример текста", (int) (Math.random() * 7));
+				} catch (IOException ex) {
+					ex.printStackTrace();
+				}
+			}
+		});
 		
-		//Set Nuimbus LookAndFeel if exist
+		//Info panel
+		JPanel eventPanel = new JPanel(new GridLayout(1, 2, 5, 5));
+		JPanel msgPanel = new JPanel();
+		msgPanel.setLayout(new BoxLayout(msgPanel, BoxLayout.Y_AXIS));
+		
+		
+		//Set Nimbus LookAndFeel if exist
 		try {
 			UIManager.setLookAndFeel("com.sun.java.swing.plaf.nimbus.NimbusLookAndFeel");
 		} catch (Exception e) {}
@@ -73,18 +109,18 @@ public class ImageCopyrighter extends JFrame {
 			imgList.setElements(files);
 		} catch (IOException e) {e.printStackTrace();}
 		for (int i = 0; i < files.length; i++) {
-			try {
+			//try {
 				File saveFile = new File(files[i].getParent() + "/" + APP_DIR_NAME + "/" + files[i].getName());
 				String ext = saveFile.getName().substring(saveFile.getName().lastIndexOf('.') + 1);
 				saveFile.mkdirs();
 				
-				BufferedImage img = ImageIO.read(files[i]); 
-				drawCopyRight(img);
-				ImageIO.write(img, ext, saveFile);
+				//BufferedImage img = ImageIO.read(files[i]); 
+				//drawCopyRight(img);
+				//ImageIO.write(img, ext, saveFile);
 				//img.flush();
-			} catch (IOException e) {		
-				e.printStackTrace();
-			}
+			//} catch (IOException e) {		
+			//	e.printStackTrace();
+			//}
 		}
 	}
 	
@@ -100,16 +136,14 @@ public class ImageCopyrighter extends JFrame {
 			iconf = new ImageConf(img, a++);
 		} catch (IOException e) {
 			e.printStackTrace();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+		} 
 		
 		iconf.setText("ImageCopyright Java");
-		iconf.setFont(null, Font.PLAIN, 14);
+		//iconf.setFont(null, Font.PLAIN, 14);
 		iconf.setLogo(logo);
 		
-		Point tc = iconf.getTextPoint();
-		Point lc = iconf.getLogoPoint();
+		Point tc = iconf.getTextCoords();
+		Point lc = iconf.getLogoCoords();
 		
 		Graphics g = img.getGraphics();
 		g.setFont(iconf.getFont());
