@@ -88,7 +88,7 @@ public class ImageCopyrighter extends JFrame {
 			}
 		});
 		
-		//Info panel
+		//Info panels
 		JPanel eventPanel = new JPanel(new GridLayout(1, 2, 5, 5));
 		JPanel msgPanel = new JPanel();
 		msgPanel.setLayout(new BoxLayout(msgPanel, BoxLayout.Y_AXIS));
