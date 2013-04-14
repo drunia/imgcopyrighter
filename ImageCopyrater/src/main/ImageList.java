@@ -37,6 +37,7 @@ public class ImageList extends JList {
 	public void setElements(File[] files) throws IOException {
 		Icon icon;
 		Image image;
+		ImageLabel.itemNumber = 0;
 		elements = new ImageLabel[files.length];
 		for (int i = 0; i < elements.length; i++) {
 			elements[i] = new ImageLabel();
@@ -44,7 +45,7 @@ public class ImageList extends JList {
 			//Initialize icons for list items
 			if (isImgIconed()) {
 				image = new ImageIcon(files[i].getAbsolutePath()).getImage();
-				icon = new ImageIcon(image.getScaledInstance(48, 48, Image.SCALE_SMOOTH));
+				icon = new ImageIcon(image.getScaledInstance(64, 64, Image.SCALE_FAST));
 				image.flush();
 			} else {
 				if (elements[0].getIcon() == null)
@@ -54,8 +55,6 @@ public class ImageList extends JList {
 			elements[i].setIcon(icon);
 		}
 		setListData(elements);
-		//Free memory after load icons
-		System.gc();
 	}
 	
 	/**

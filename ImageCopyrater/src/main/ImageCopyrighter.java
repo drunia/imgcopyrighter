@@ -2,33 +2,45 @@ package main;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.GridLayout;
 import java.awt.Point;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 
 import javax.imageio.ImageIO;
+import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JProgressBar;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
+import javax.swing.SwingUtilities;
+import javax.swing.SwingWorker;
 import javax.swing.UIManager;
+import javax.swing.border.Border;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
 
-public class ImageCopyrighter extends JFrame {
+public class ImageCopyrighter extends JFrame implements ActionListener {
 	private final String APP_DIR_NAME = "ImageCopyrighter";
 	private static final long serialVersionUID = 1L;
-	private JButton startButton;
+	private JPanel controlPanel;
+	private JButton selectFilesBtn;
 	private JTextField textField;
 	private ImageList imgList;
+	private JProgressBar progress;
+	private JLabel infoLb;
 	private ImagePreview iPview;
 	
 	static int a;
@@ -38,12 +50,19 @@ public class ImageCopyrighter extends JFrame {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		ImageCopyrighter ic = new ImageCopyrighter();
-		ic.setVisible(true);
-		ImageFileChooser ifc = new ImageFileChooser(null);
-		ifc.showOpenDialog(null);
-		File[] files = ifc.getSelectedFiles();
-		ic.doIt(files);
+		//Set Nimbus LookAndFeel if exist
+		try {
+			UIManager.setLookAndFeel("com.sun.java.swing.plaf.nimbus.NimbusLookAndFeel");
+		} catch (Exception e) {}
+			
+		SwingUtilities.invokeLater(new Runnable() {	
+			@Override
+			public void run() {
+				ImageCopyrighter ic = new ImageCopyrighter();
+				ic.setVisible(true);
+			}
+		});
+
 		
 	}
 	
@@ -53,51 +72,113 @@ public class ImageCopyrighter extends JFrame {
 	public ImageCopyrighter() {
 		super("ImageCopyright by drunia");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setSize(600, 400);
+		setSize(800, 600);
 		setLocationRelativeTo(null);
 	
 		int horizComponents = 2;
-		JPanel cPanel = new JPanel(); 
-		cPanel.setLayout(new GridLayout(1, horizComponents));
+		JPanel mainPanel = new JPanel(); 
+		mainPanel.setLayout(new GridLayout(1, horizComponents));
+		
+		Border grayBorder = BorderFactory.createLineBorder(Color.LIGHT_GRAY);
 		
 		imgList = new ImageList();
 		imgList.setImgIconed(true);
 		JScrollPane spane = new JScrollPane(imgList);
-		cPanel.add(spane);
+		spane.setBorder(grayBorder);
+		mainPanel.add(spane);
 		
+		//Preview & controls panel
+		JPanel prevControlPanel = new JPanel();
+		prevControlPanel.setLayout(new BoxLayout(prevControlPanel, BoxLayout.Y_AXIS));
+		
+		//Preview panel
 	    iPview = new ImagePreview();
-	    cPanel.add(iPview);
+	    prevControlPanel.add(iPview);
 	    
-	    add(cPanel, BorderLayout.CENTER);
+	    //Control panel
+	    controlPanel = new JPanel();
+	    controlPanel.setLayout(new GridLayout(4, 2, 5, 5));
+	    
+	    //Select files Button
+	    selectFilesBtn = new JButton("Выбрать файлы");
+	    selectFilesBtn.setActionCommand("selectFilesBtn");
+	    selectFilesBtn.addActionListener(this);
+	    
+	    
+	    controlPanel.add(selectFilesBtn);
+	    
+	    controlPanel.setBorder(grayBorder);
+	    controlPanel.setMaximumSize(new Dimension(getWidth() / 2, 150));
+	    
+	    prevControlPanel.add(controlPanel);
+	    mainPanel.add(prevControlPanel);
+	    add(mainPanel, BorderLayout.CENTER);
+	    
+		//Info panels
+		JPanel infoPanel = new JPanel(new GridLayout(1, 2, 5, 5));
+		infoPanel.setBorder(BorderFactory.createTitledBorder(grayBorder, "Информационная панель:"));
+		infoPanel.setPreferredSize(new Dimension(-1, 75));
+		
+		JPanel msgPanel = new JPanel();
+		msgPanel.setLayout(new BoxLayout(msgPanel, BoxLayout.X_AXIS));
+	
+		//ProgressBar
+		JPanel progressPanel = new JPanel();
+		progressPanel.setLayout(new BoxLayout(progressPanel, BoxLayout.X_AXIS));
+		
+		progress = new JProgressBar(0, 100);
+		progress.setVisible(false);
+		
+		progressPanel.add(progress);
+		infoPanel.add(progressPanel);
+		
+		//Label
+		infoLb = new JLabel();
+		ImageIcon icon = new ImageIcon(getClass().getResource("/res/info_icon.png"));
+		infoLb.setIcon(icon);
+		msgPanel.add(infoLb);
+		infoPanel.add(msgPanel);
+		
+		add(infoPanel, BorderLayout.SOUTH);
 	    
 	    //ImageList selection handler
 		imgList.addListSelectionListener(new  ListSelectionListener() {
+			private int lastIndex;
 			@Override
 			public void valueChanged(ListSelectionEvent e) {
+				System.out.println("first:"  + e.getFirstIndex());
+				System.out.println("last:"  + e.getLastIndex());
+				System.out.println("---");
+				
 				ImageList l = (ImageList) e.getSource();
-				ImageLabel lb = (ImageLabel) l.getSelectedValue();
-				File image = lb.getImageFile();
-				BufferedImage img;
+				if (lastIndex == l.getSelectedIndex() && lastIndex != 0) return;
+				lastIndex =  l.getSelectedIndex();
+				if (lastIndex < 0) return;
+				ImageLabel lb = (ImageLabel) l.getModel().getElementAt(lastIndex);
+				
+				final File image = lb.getImageFile();
+				final BufferedImage img;
+				final Font f = new Font(null, Font.ITALIC, 20);
+				
 				try {
 					img = ImageIO.read(image);
-					Font f = new Font(null, Font.ITALIC, 25);
-					iPview.setPreview(img, null, f, "Пример текста", (int) (Math.random() * 7));
-				} catch (IOException ex) {
+										
+					//Load preview in another thread
+					SwingWorker<Object, Object> loader = new SwingWorker<Object, Object>() {
+						@Override
+						protected Void doInBackground() {
+							iPview.setPreview(img, null, f, "Пример текста", (int) (Math.random() * 7));
+							img.flush();
+							return null;
+						}
+					};
+					loader.execute();
+					
+				} catch (Exception ex) {
 					ex.printStackTrace();
 				}
 			}
-		});
-		
-		//Info panels
-		JPanel eventPanel = new JPanel(new GridLayout(1, 2, 5, 5));
-		JPanel msgPanel = new JPanel();
-		msgPanel.setLayout(new BoxLayout(msgPanel, BoxLayout.Y_AXIS));
-		
-		
-		//Set Nimbus LookAndFeel if exist
-		try {
-			UIManager.setLookAndFeel("com.sun.java.swing.plaf.nimbus.NimbusLookAndFeel");
-		} catch (Exception e) {}
+		});		
 	}
 	
 	/**
@@ -108,11 +189,11 @@ public class ImageCopyrighter extends JFrame {
 		try {
 			imgList.setElements(files);
 		} catch (IOException e) {e.printStackTrace();}
-		for (int i = 0; i < files.length; i++) {
+	//	for (int i = 0; i < files.length; i++) {
 			//try {
-				File saveFile = new File(files[i].getParent() + "/" + APP_DIR_NAME + "/" + files[i].getName());
-				String ext = saveFile.getName().substring(saveFile.getName().lastIndexOf('.') + 1);
-				saveFile.mkdirs();
+	//			File saveFile = new File(files[i].getParent() + "/" + APP_DIR_NAME + "/" + files[i].getName());
+	//			String ext = saveFile.getName().substring(saveFile.getName().lastIndexOf('.') + 1);
+	//			saveFile.mkdirs();
 				
 				//BufferedImage img = ImageIO.read(files[i]); 
 				//drawCopyRight(img);
@@ -121,7 +202,7 @@ public class ImageCopyrighter extends JFrame {
 			//} catch (IOException e) {		
 			//	e.printStackTrace();
 			//}
-		}
+		//}
 	}
 	
 	/**
@@ -155,6 +236,39 @@ public class ImageCopyrighter extends JFrame {
 		System.out.println("textPoint = " + tc);
 		
 		System.out.println("Done!");
+	}
+
+	/**
+	 * ActionEvent handler
+	 * @param e - ActionEvent
+	 */
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		String aCommand = e.getActionCommand();
+		
+		//Select files Buton
+		if (aCommand.equalsIgnoreCase("selectFilesBtn")) {
+			ImageFileChooser ifc = new ImageFileChooser(null);
+			ifc.showOpenDialog(null);
+			final File[] files = ifc.getSelectedFiles();
+			
+			progress.setVisible(true);
+			progress.setIndeterminate(true);
+			
+			SwingWorker<Object, Object> filesLoader = new SwingWorker<Object, Object>() {
+				@Override
+				protected Object doInBackground() {
+					doIt(files);
+					progress.setIndeterminate(false);
+					progress.setVisible(false);
+					return null;
+				}
+			};
+			filesLoader.execute();
+		}
+		
+		
+		
 	}
 
 }
