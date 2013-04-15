@@ -41,6 +41,7 @@ public class ImageCopyrighter extends JFrame implements ActionListener {
 	private ImageList imgList;
 	private JProgressBar progress;
 	private JLabel infoLb;
+	private FontComboBox fontCbx;
 	private ImagePreview iPview;
 	
 	static int a;
@@ -112,9 +113,9 @@ public class ImageCopyrighter extends JFrame implements ActionListener {
 	
 	    //Font]
 	    JLabel fontSelLb = new JLabel("Выберите шрифт:");
-	    FontComboBox fc = new FontComboBox();
+	    fontCbx = new FontComboBox();
 	    controlPanel.add(fontSelLb);
-	    controlPanel.add(fc);
+	    controlPanel.add(fontCbx);
 	    
 	    prevControlPanel.add(controlPanel, BorderLayout.SOUTH);
 	    mainPanel.add(prevControlPanel);
@@ -159,7 +160,6 @@ public class ImageCopyrighter extends JFrame implements ActionListener {
 				
 				final File image = lb.getImageFile();
 				final BufferedImage img;
-				final Font f = new Font(null, Font.ITALIC, 20);
 				
 				try {
 					img = ImageIO.read(image);
@@ -173,7 +173,7 @@ public class ImageCopyrighter extends JFrame implements ActionListener {
 							infoLb.setText("Обработка ...");
 							
 							//Set preview
-							iPview.setPreview(img, null, f, "Пример текста", (int) (Math.random() * 7));
+							iPview.setPreview(img, null, fontCbx.getSelectedFont(0, 20), "Пример текста", (int) (Math.random() * 7));
 							img.flush();
 							
 							progress.setIndeterminate(false);

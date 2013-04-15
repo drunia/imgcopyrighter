@@ -98,10 +98,11 @@ public class ImageConf {
 		int imgH = proccessImage.getHeight();
 		
 		//Calculate font size
-		int fontSize = font.getSize() * (((imgH * imgW) / 1000000) + 1);
+		int fontSize = font.getSize() + ((imgH + imgW) / 100);
 		calcFont = new Font(font.getName(), font.getStyle(), fontSize);
 		FontMetrics fm = proccessImage.getGraphics().getFontMetrics(calcFont);
 		
+		System.out.println(fontSize);
 		textWidth = fm.stringWidth(text);
 		textHeight = fm.getHeight();
 		int x = 0, y = 0;	

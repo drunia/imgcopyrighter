@@ -113,6 +113,7 @@ public class ImagePreview extends JPanel {
 		
 		g2d.drawImage(img, 0, 0, null);
 		
+		System.out.println("preview image h=" + previewImage.getHeight() + " w=" + previewImage.getWidth());
 		ImageConf imgConf = new ImageConf(previewImage, orientation);
 		imgConf.setFont(font);
 		imgConf.setText(text);
