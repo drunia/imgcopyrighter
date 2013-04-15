@@ -46,7 +46,7 @@ public class ImagePreview extends JPanel {
 	
 	/**
 	 * SwingWorker updater preview class
-	 * Method setPreview() eun in another thread
+	 * Method setPreview() run in another thread
 	 */
 	private class PreviewUpdater extends SwingWorker<Void, Void> {
 		@Override
@@ -61,7 +61,7 @@ public class ImagePreview extends JPanel {
 	 */
 	private class ResizeHandler extends ComponentAdapter {
 		/**
-		 * Update up when height or width changed for 1 second
+		 * Update up for 1 second
 		 */
 		@Override
 		public void componentResized(ComponentEvent e) {
@@ -95,7 +95,12 @@ public class ImagePreview extends JPanel {
 		this.orientation = orientation;
 		
 		//Build preview
-		Image img = image.getScaledInstance(getWidth(), getHeight(), Image.SCALE_FAST);
+		Image img = null;
+		if (getHeight() > getWidth()) 
+			img = image.getScaledInstance(getWidth(), -1, Image.SCALE_FAST);
+		else
+			img = image.getScaledInstance(-1, getHeight(), Image.SCALE_FAST);
+		
 		if (previewImage != null) previewImage.flush();
 		previewImage = new BufferedImage(img.getWidth(null), img.getHeight(null), BufferedImage.TYPE_INT_ARGB);
 		Graphics2D g2d = previewImage.createGraphics();
