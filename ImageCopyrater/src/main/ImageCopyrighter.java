@@ -33,7 +33,7 @@ import javax.swing.event.ListSelectionListener;
 
 
 public class ImageCopyrighter extends JFrame implements ActionListener {
-	private final String APP_DIR_NAME = "ImageCopyrighter";
+	private final String APP_NAME = "ImageCopyrighter";
 	private static final long serialVersionUID = 1L;
 	private JPanel controlPanel;
 	private JButton selectFilesBtn;
@@ -47,7 +47,8 @@ public class ImageCopyrighter extends JFrame implements ActionListener {
 	
 	
 	/**
-	 * @param args
+	 * Start point
+	 * @param args - array of parameters from command line 
 	 */
 	public static void main(String[] args) {
 		//Set Nimbus LookAndFeel if exist
@@ -61,9 +62,7 @@ public class ImageCopyrighter extends JFrame implements ActionListener {
 				ImageCopyrighter ic = new ImageCopyrighter();
 				ic.setVisible(true);
 			}
-		});
-
-		
+		});	
 	}
 	
 	/**
@@ -72,68 +71,71 @@ public class ImageCopyrighter extends JFrame implements ActionListener {
 	public ImageCopyrighter() {
 		super("ImageCopyright by drunia");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setSize(800, 600);
+		setSize(800, 500);
 		setLocationRelativeTo(null);
 	
-		int horizComponents = 2;
 		JPanel mainPanel = new JPanel(); 
-		mainPanel.setLayout(new GridLayout(1, horizComponents));
+		mainPanel.setLayout(new BorderLayout(5, 5));
 		
 		Border grayBorder = BorderFactory.createLineBorder(Color.LIGHT_GRAY);
 		
+		//ImageList
 		imgList = new ImageList();
 		imgList.setImgIconed(true);
 		JScrollPane spane = new JScrollPane(imgList);
 		spane.setBorder(grayBorder);
-		mainPanel.add(spane);
+		spane.setPreferredSize(new Dimension(350, -1));
+		mainPanel.add(spane, BorderLayout.WEST);
 		
 		//Preview & controls panel
 		JPanel prevControlPanel = new JPanel();
-		prevControlPanel.setLayout(new BoxLayout(prevControlPanel, BoxLayout.Y_AXIS));
+		prevControlPanel.setLayout(new BorderLayout(1, 5));
 		
 		//Preview panel
 	    iPview = new ImagePreview();
-	    prevControlPanel.add(iPview);
+	    prevControlPanel.add(iPview, BorderLayout.CENTER);
 	    
 	    //Control panel
 	    controlPanel = new JPanel();
-	    controlPanel.setLayout(new GridLayout(4, 2, 5, 5));
+	    controlPanel.setLayout(new GridLayout(0, 2, 5, 1));
+	    controlPanel.setBorder(grayBorder);
 	    
-	    //Select files Button
+	    //Select files
+	    JLabel selFilesLb = new JLabel("Выберите файлы:");
+	
 	    selectFilesBtn = new JButton("Выбрать файлы");
 	    selectFilesBtn.setActionCommand("selectFilesBtn");
 	    selectFilesBtn.addActionListener(this);
 	    
-	    
+	    controlPanel.add(selFilesLb);
 	    controlPanel.add(selectFilesBtn);
+	
+	    //Font]
+	    JLabel fontSelLb = new JLabel("Выберите шрифт:");
+	    FontComboBox fc = new FontComboBox();
+	    controlPanel.add(fontSelLb);
+	    controlPanel.add(fc);
 	    
-	    controlPanel.setBorder(grayBorder);
-	    controlPanel.setMaximumSize(new Dimension(getWidth() / 2, 150));
-	    
-	    prevControlPanel.add(controlPanel);
+	    prevControlPanel.add(controlPanel, BorderLayout.SOUTH);
 	    mainPanel.add(prevControlPanel);
 	    add(mainPanel, BorderLayout.CENTER);
 	    
 		//Info panels
-		JPanel infoPanel = new JPanel(new GridLayout(1, 2, 5, 5));
+		JPanel infoPanel = new JPanel(new GridLayout(1, 2, 10, 5));
 		infoPanel.setBorder(BorderFactory.createTitledBorder(grayBorder, "Информационная панель:"));
 		infoPanel.setPreferredSize(new Dimension(-1, 75));
 		
 		JPanel msgPanel = new JPanel();
 		msgPanel.setLayout(new BoxLayout(msgPanel, BoxLayout.X_AXIS));
 	
-		//ProgressBar
-		JPanel progressPanel = new JPanel();
-		progressPanel.setLayout(new BoxLayout(progressPanel, BoxLayout.X_AXIS));
-		
+		//ProgressBar	
 		progress = new JProgressBar(0, 100);
 		progress.setVisible(false);
-		
-		progressPanel.add(progress);
-		infoPanel.add(progressPanel);
+		infoPanel.add(progress);
 		
 		//Label
 		infoLb = new JLabel();
+		infoLb.setFont(new Font(null, Font.BOLD | Font.ITALIC, 14));
 		ImageIcon icon = new ImageIcon(getClass().getResource("/res/info_icon.png"));
 		infoLb.setIcon(icon);
 		msgPanel.add(infoLb);
@@ -144,15 +146,14 @@ public class ImageCopyrighter extends JFrame implements ActionListener {
 	    //ImageList selection handler
 		imgList.addListSelectionListener(new  ListSelectionListener() {
 			private int lastIndex;
+			
 			@Override
 			public void valueChanged(ListSelectionEvent e) {
-				System.out.println("first:"  + e.getFirstIndex());
-				System.out.println("last:"  + e.getLastIndex());
-				System.out.println("---");
-				
+				if (e.getValueIsAdjusting()) return;
+
 				ImageList l = (ImageList) e.getSource();
-				if (lastIndex == l.getSelectedIndex() && lastIndex != 0) return;
 				lastIndex =  l.getSelectedIndex();
+				
 				if (lastIndex < 0) return;
 				ImageLabel lb = (ImageLabel) l.getModel().getElementAt(lastIndex);
 				
@@ -162,13 +163,23 @@ public class ImageCopyrighter extends JFrame implements ActionListener {
 				
 				try {
 					img = ImageIO.read(image);
-										
+					
 					//Load preview in another thread
-					SwingWorker<Object, Object> loader = new SwingWorker<Object, Object>() {
+					SwingWorker<Void, Void> loader = new SwingWorker<Void, Void>() {
 						@Override
 						protected Void doInBackground() {
+							progress.setVisible(true);
+							progress.setIndeterminate(true);
+							infoLb.setText("Обработка ...");
+							
+							//Set preview
 							iPview.setPreview(img, null, f, "Пример текста", (int) (Math.random() * 7));
 							img.flush();
+							
+							progress.setIndeterminate(false);
+							progress.setVisible(false);
+							infoLb.setText("");
+							
 							return null;
 						}
 					};
@@ -186,9 +197,7 @@ public class ImageCopyrighter extends JFrame implements ActionListener {
 	 * @param files - array of selected file/s
 	 */
 	public void doIt(File[] files) {
-		try {
-			imgList.setElements(files);
-		} catch (IOException e) {e.printStackTrace();}
+
 	//	for (int i = 0; i < files.length; i++) {
 			//try {
 	//			File saveFile = new File(files[i].getParent() + "/" + APP_DIR_NAME + "/" + files[i].getName());
@@ -251,24 +260,28 @@ public class ImageCopyrighter extends JFrame implements ActionListener {
 			ImageFileChooser ifc = new ImageFileChooser(null);
 			ifc.showOpenDialog(null);
 			final File[] files = ifc.getSelectedFiles();
+			if (files.length == 0) return;
 			
 			progress.setVisible(true);
 			progress.setIndeterminate(true);
+			infoLb.setText("Загрузка изображений ...");
 			
-			SwingWorker<Object, Object> filesLoader = new SwingWorker<Object, Object>() {
+			SwingWorker<Void, Void> filesLoader = new SwingWorker<Void, Void>() {
 				@Override
-				protected Object doInBackground() {
-					doIt(files);
-					progress.setIndeterminate(false);
-					progress.setVisible(false);
+				protected Void doInBackground() {
+					try {
+						imgList.setElements(files);
+					} catch (Exception e) {e.printStackTrace();}
+					finally {
+						progress.setIndeterminate(false);
+						progress.setVisible(false);
+						infoLb.setText("");
+					}
 					return null;
 				}
 			};
 			filesLoader.execute();
 		}
 		
-		
-		
 	}
-
 }

@@ -2,6 +2,7 @@ package main;
 
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.Image;
 import java.io.File;
 import java.io.IOException;
@@ -86,7 +87,7 @@ class ILCellRenderer extends DefaultListCellRenderer {
 			int index, boolean isSelected, boolean cellHasFocus) {
 		JLabel listElement = (JLabel) value;	
 		if (isSelected) 
-			listElement.setBorder(BorderFactory.createLineBorder(Color.BLUE, 4));
+			listElement.setBorder(BorderFactory.createLineBorder(Color.BLUE, 3));
 		else
 			listElement.setBorder(BorderFactory.createRaisedBevelBorder());
 		return listElement;
@@ -101,6 +102,13 @@ class ImageLabel extends JLabel {
 	private static final long serialVersionUID = 1L;
 	public static int itemNumber;
 	private File imageFile;
+	
+	/**
+	 * Default constructor
+	 */
+	public ImageLabel() {
+		setPreferredSize(new Dimension(-1, 48));
+	}
 	
 	/**
 	 * Return a file associated with list item
