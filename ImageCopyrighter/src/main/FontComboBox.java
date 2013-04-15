@@ -18,7 +18,6 @@ import javax.swing.ListCellRenderer;
  */
 public class FontComboBox extends JComboBox implements ActionListener {
 	private static final long serialVersionUID = 1L;
-	private String fonts[];
 	private String selectedFont;
 
 	/**
@@ -64,8 +63,7 @@ public class FontComboBox extends JComboBox implements ActionListener {
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		FontComboBox fc = (FontComboBox) e.getSource();
-		selectedFont = fonts[fc.getSelectedIndex()];
-		System.out.println(selectedFont);
+		selectedFont = (String) fc.getSelectedItem();
 	}
 	
 	/**

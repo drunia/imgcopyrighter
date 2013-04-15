@@ -71,7 +71,7 @@ public class ImageCopyrighter extends JFrame implements ActionListener {
 	public ImageCopyrighter() {
 		super("ImageCopyright by drunia");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setSize(800, 500);
+		setSize(800, 400);
 		setLocationRelativeTo(null);
 	
 		JPanel mainPanel = new JPanel(); 
