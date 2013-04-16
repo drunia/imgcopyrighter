@@ -26,24 +26,25 @@ public class FontColorSizeDialog extends JDialog implements ActionListener {
 	
 	/**
 	 * Constructor class
-	 * Callback params initialize before dialog be closed
-	 * 
-	 * @param callBackColor - selected color
-	 * @param callBackSize - selected size
+	 * @param owner - object of {@link ImageCopyrighter}
+	 * @param initColor - initialized color
+	 * @param initSize - initialized size
 	 */
-	public FontColorSizeDialog(ImageCopyrighter owner) {
+	public FontColorSizeDialog(ImageCopyrighter owner, Color initColor, int initSize) {
 		super();
 		this.owner = owner;
-		
+
 		setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 		setTitle("Выбор цвета и размера шрифта");
 		setPreferredSize(new Dimension(480, 420));
 		setModal(true);
-		setLocationRelativeTo(owner);
+		setLocation(
+				owner.getLocation().x + owner.getWidth() / 4,
+				owner.getLocation().y + owner.getHeight() / 4);
 		setResizable(false);
 		
 		//JColorChooser
-		colorChooser = new JColorChooser(Color.WHITE);
+		colorChooser = new JColorChooser(initColor);
 		add(colorChooser, BorderLayout.CENTER);
 		
 		//Control panel
@@ -60,11 +61,11 @@ public class FontColorSizeDialog extends JDialog implements ActionListener {
 			sizes[i] = Integer.toString(i + 5);
 		
 		sizeCbx = new JComboBox(sizes);
-		sizeCbx.setSelectedIndex(7);
+		sizeCbx.setSelectedItem(Integer.toString(initSize));
 		controlPanel.add(sizeCbx);
 		
 		//Accept button
-		JButton acceptBtn = new JButton("Выбрать");
+		JButton acceptBtn = new JButton("Применить");
 		acceptBtn.setActionCommand("acceptButton");
 		acceptBtn.addActionListener(this);
 		controlPanel.add(acceptBtn);

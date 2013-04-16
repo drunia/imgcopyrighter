@@ -29,6 +29,7 @@ public class ImagePreview extends JPanel {
 	private BufferedImage logo;
 	private Font font;
 	private String text;
+	private Color fontColor;
 	private int orientation;
 	private Point logoCoords;
 	private Point textCoords;
@@ -51,7 +52,7 @@ public class ImagePreview extends JPanel {
 	private class PreviewUpdater extends SwingWorker<Void, Void> {
 		@Override
 		protected Void doInBackground() {
-			setPreview(origImage, logo, font, text, orientation);
+			setPreview(origImage, logo, font, text, orientation, fontColor);
 			return null;
 		}
 	}
@@ -86,12 +87,14 @@ public class ImagePreview extends JPanel {
 	 * @param font  - {@link Font}
 	 * @param text  - {@link String}
 	 * @param orientation - int
+	 * @param color TODO
 	 */
-	public void setPreview(BufferedImage image, BufferedImage logo, Font font, String text, int orientation) {
+	public void setPreview(BufferedImage image, BufferedImage logo, Font font, String text, int orientation, Color color) {
 		origImage = image;
 		this.logo = logo;  
 		this.font = font;
 		this.text = text;
+		this.fontColor = color;
 		this.orientation = orientation;
 		
 		//Build preview
@@ -118,7 +121,6 @@ public class ImagePreview extends JPanel {
 		
 		g2d.drawImage(img, 0, 0, null);
 		
-		System.out.println("preview image h=" + previewImage.getHeight() + " w=" + previewImage.getWidth());
 		ImageConf imgConf = new ImageConf(previewImage, orientation);
 		imgConf.setFont(font);
 		imgConf.setText(text);
@@ -137,6 +139,7 @@ public class ImagePreview extends JPanel {
 			imgConf.setLogo(logo);
 			g2d.drawImage(logo, logoCoords.x, logoCoords.y, null);
 		}
+		g2d.setColor(color);
 		g2d.drawString(imgConf.getText(), textCoords.x, textCoords.y);
 		g2d.dispose();
 		

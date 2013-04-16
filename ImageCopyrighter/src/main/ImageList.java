@@ -87,7 +87,7 @@ class ILCellRenderer extends DefaultListCellRenderer {
 			int index, boolean isSelected, boolean cellHasFocus) {
 		JLabel listElement = (JLabel) value;	
 		if (isSelected) 
-			listElement.setBorder(BorderFactory.createLineBorder(Color.BLUE, 3));
+			listElement.setBorder(BorderFactory.createLineBorder(Color.GREEN, 3));
 		else
 			listElement.setBorder(BorderFactory.createRaisedBevelBorder());
 		return listElement;

@@ -5,10 +5,18 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.Point;
+import java.awt.RenderingHints;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -18,6 +26,7 @@ import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -42,8 +51,9 @@ public class ImageCopyrighter extends JFrame implements ActionListener {
 	private JProgressBar progress;
 	private JLabel infoLb;
 	private FontComboBox fontCbx;
+	private JComboBox orientCbx;
 	private ImagePreview iPview;
-	public Color fontColor = Color.WHITE;
+	public Color fontColor = Color.ORANGE;
 	public int fontSize = 14;
 	
 	static int a;
@@ -74,7 +84,8 @@ public class ImageCopyrighter extends JFrame implements ActionListener {
 	public ImageCopyrighter() {
 		super("ImageCopyright by drunia");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setSize(800, 600);
+		setSize(800, 500);
+		//setMinimumSize(new Dimension(800, 500));
 		setLocationRelativeTo(null);
 	
 		JPanel mainPanel = new JPanel(); 
@@ -100,34 +111,111 @@ public class ImageCopyrighter extends JFrame implements ActionListener {
 	    
 	    //Control panel
 	    controlPanel = new JPanel();
-	    controlPanel.setLayout(new GridLayout(0, 2, 5, 1));
+	    controlPanel.setLayout(new GridBagLayout());
 	    controlPanel.setBorder(grayBorder);
+	    
+	    GridBagConstraints gbc = new GridBagConstraints();
 	    
 	    //Select files
 	    JLabel selFilesLb = new JLabel("Выберите файлы:");
-	
+	    selFilesLb.setPreferredSize(new Dimension(150, 25));
+	    gbc.fill = GridBagConstraints.HORIZONTAL;
+	    gbc.gridx = 0;
+	    gbc.gridy = 0;
+	    gbc.weightx = 1;
+	    controlPanel.add(selFilesLb, gbc);
+	    
 	    selectFilesBtn = new JButton("Выбрать файлы");
 	    selectFilesBtn.setActionCommand("selectFilesBtn");
 	    selectFilesBtn.addActionListener(this);
-	    
-	    controlPanel.add(selFilesLb);
-	    controlPanel.add(selectFilesBtn);
+	    ImageIcon imgIc = new ImageIcon(getClass().getResource("/res/gtk_directory.png"));
+	    selectFilesBtn.setIcon(imgIc);
+	    gbc.fill = GridBagConstraints.HORIZONTAL;
+	    gbc.gridx = 1;
+	    gbc.gridy = 0;
+	    gbc.weightx = 0.8;
+	    controlPanel.add(selectFilesBtn, gbc);
 	
 	    //Font]
 	    JPanel fontPanel = new JPanel();
 	    fontPanel.setLayout(new GridLayout(0, 2, 2, 2));
+	    fontPanel.setMinimumSize(new Dimension(300, 25));
 	    
 	    JLabel fontSelLb = new JLabel("Выберите шрифт:");
+	    fontSelLb.setPreferredSize(new Dimension(150, 30));
 	    fontCbx = new FontComboBox();
-	    controlPanel.add(fontSelLb);
+	    fontCbx.setActionCommand("fontCbx");
+	    fontCbx.addActionListener(this);
+	    gbc.fill = GridBagConstraints.HORIZONTAL;
+	    gbc.gridx = 0;
+	    gbc.gridy = 1;
+	    gbc.weightx = 1;
+	    controlPanel.add(fontSelLb, gbc);
 	    
-	    JButton colorSizeBtn = new JButton("Цвет шрифта");
+	    JButton colorSizeBtn = new JButton("Цвет и размер");
 	    colorSizeBtn.setActionCommand("colorSizeBtn");
 	    colorSizeBtn.addActionListener(this);
+	    colorSizeBtn.setIcon(get32х16IconFromFontColorAndSize(fontColor, fontSize));
 	    
 	    fontPanel.add(fontCbx);
 	    fontPanel.add(colorSizeBtn);
-	    controlPanel.add(fontPanel);
+	    gbc.fill = GridBagConstraints.HORIZONTAL;
+	    gbc.gridx = 1;
+	    gbc.gridy = 1;
+	    gbc.weightx = 0.8;
+	    controlPanel.add(fontPanel, gbc);
+	    
+	    //Text
+	    JLabel textLb = new JLabel("Введите текст:");
+	    gbc.fill = GridBagConstraints.HORIZONTAL;
+	    gbc.gridx = 0;
+	    gbc.gridy = 2;
+	    gbc.weightx = 1;
+	    controlPanel.add(textLb, gbc);
+	    
+	    textField = new JTextField(100);
+	    textField.addKeyListener(new KeyListener() {
+			@Override
+			public void keyTyped(KeyEvent e) {}
+			@Override
+			public void keyReleased(KeyEvent e) {}
+			@Override
+			public void keyPressed(KeyEvent e) {
+				if (e.getKeyCode() != KeyEvent.VK_ENTER) return;
+				//Generate event for recreating preview 
+				ListSelectionListener lsl = imgList.getListSelectionListeners()[0];
+				ListSelectionEvent lse = new ListSelectionEvent(imgList, 0, 0, false);
+				lsl.valueChanged(lse);
+			}
+		});
+	    textField.setText("ImageCopyrighter by drunia");
+	    gbc.fill = GridBagConstraints.HORIZONTAL;
+	    gbc.gridx = 1;
+	    gbc.gridy = 2;
+	    gbc.weightx = 0.8;
+	    controlPanel.add(textField, gbc);
+	    
+	    //Orientation
+	    JLabel orientLb = new JLabel("Расположение текста:");
+	    gbc.fill = GridBagConstraints.HORIZONTAL;
+	    gbc.gridx = 0;
+	    gbc.gridy = 3;
+	    gbc.weightx = 1;
+	    controlPanel.add(orientLb, gbc);
+	    
+	    String[] orientItems = new String[] {
+	    		"В левом верхнем углу", "Вверху по центру",
+	    		"В правом верхнем углу", "В левом нижнем углу",
+	    		"Внизу по центру", "В правом нижнем углу", "В центре"
+	    };
+	    orientCbx = new JComboBox(orientItems);
+	    orientCbx.setActionCommand("orientCbx");
+	    orientCbx.addActionListener(this);
+	    gbc.fill = GridBagConstraints.HORIZONTAL;
+	    gbc.gridx = 1;
+	    gbc.gridy = 3;
+	    gbc.weightx = 0.8;
+	    controlPanel.add(orientCbx, gbc);
 	    
 	    prevControlPanel.add(controlPanel, BorderLayout.SOUTH);
 	    mainPanel.add(prevControlPanel);
@@ -185,7 +273,8 @@ public class ImageCopyrighter extends JFrame implements ActionListener {
 							infoLb.setText("Обработка ...");
 							
 							//Set preview
-							iPview.setPreview(img, null, fontCbx.getSelectedFont(0, 20), "Пример текста", (int) (Math.random() * 7));
+							Font f = fontCbx.getSelectedFont(0, fontSize);
+							iPview.setPreview(img, null, f, textField.getText(), orientCbx.getSelectedIndex(), fontColor);
 							img.flush();
 							
 							progress.setIndeterminate(false);
@@ -297,10 +386,50 @@ public class ImageCopyrighter extends JFrame implements ActionListener {
 		
 		//Select font size & color
 		if (aCommand.equalsIgnoreCase("colorSizeBtn")) {
+			JButton colorSizeButton = (JButton) e.getSource();
+			new FontColorSizeDialog(this, fontColor, fontSize);
+			colorSizeButton.setIcon(get32х16IconFromFontColorAndSize(fontColor, fontSize));
 			
-			new FontColorSizeDialog(this);
-			System.out.println("color: " + fontColor + " size: " + fontSize);
+			//Generate event for recreating preview 
+			ListSelectionListener lsl = imgList.getListSelectionListeners()[0];
+			ListSelectionEvent lse = new ListSelectionEvent(imgList, 0, 0, false);
+			lsl.valueChanged(lse);
 		}
 		
+		//Select font 
+		if (aCommand.equalsIgnoreCase("fontCbx")) {
+			//Generate event for recreating preview 
+			ListSelectionListener lsl = imgList.getListSelectionListeners()[0];
+			ListSelectionEvent lse = new ListSelectionEvent(imgList, 0, 0, false);
+			lsl.valueChanged(lse);
+		}
+		
+		//Orientation changes
+		if (aCommand.equalsIgnoreCase("orientCbx")) {
+			//Generate event for recreating preview 
+			ListSelectionListener lsl = imgList.getListSelectionListeners()[0];
+			ListSelectionEvent lse = new ListSelectionEvent(imgList, 0, 0, false);
+			lsl.valueChanged(lse);
+		}
+		
+	}
+	
+	/**
+	 * Create 32 x 16 icon from size and color
+	 * @param c - Font color
+	 * @param size - Integer value for draw
+	 * @return ImageIcon 32 x 16
+	 */
+	private ImageIcon get32х16IconFromFontColorAndSize(Color c, int size) {
+		BufferedImage btnIcon = new BufferedImage(32, 16, BufferedImage.TYPE_INT_ARGB);
+		Graphics2D g2d = btnIcon.createGraphics();
+		g2d.setRenderingHint(
+			        RenderingHints.KEY_TEXT_ANTIALIASING,
+			        RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+		g2d.setColor(c);
+		g2d.setFont(new Font(null, Font.BOLD, 16));
+		g2d.drawString(Integer.toString(size), 0, 14);
+		g2d.dispose();
+		return new ImageIcon(btnIcon);
 	}
 }
