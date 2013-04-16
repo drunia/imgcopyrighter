@@ -96,10 +96,15 @@ public class ImagePreview extends JPanel {
 		
 		//Build preview
 		Image img = null;
-		if (getHeight() > getWidth()) 
+		if (image.getWidth() > image.getHeight()) { 
 			img = image.getScaledInstance(getWidth(), -1, Image.SCALE_FAST);
-		else
+			if (getWidth() > getHeight()) 
+				img = img.getScaledInstance(getHeight(), -1, Image.SCALE_FAST);
+		} else {
 			img = image.getScaledInstance(-1, getHeight(), Image.SCALE_FAST);
+			if (getHeight() > getWidth()) 
+				img = img.getScaledInstance(-1, getWidth(), Image.SCALE_FAST);
+		}
 		
 		if (previewImage != null) previewImage.flush();
 		previewImage = new BufferedImage(img.getWidth(null), img.getHeight(null), BufferedImage.TYPE_INT_ARGB);

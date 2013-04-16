@@ -43,6 +43,8 @@ public class ImageCopyrighter extends JFrame implements ActionListener {
 	private JLabel infoLb;
 	private FontComboBox fontCbx;
 	private ImagePreview iPview;
+	public Color fontColor = Color.WHITE;
+	public int fontSize = 14;
 	
 	static int a;
 	
@@ -72,7 +74,7 @@ public class ImageCopyrighter extends JFrame implements ActionListener {
 	public ImageCopyrighter() {
 		super("ImageCopyright by drunia");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setSize(800, 400);
+		setSize(800, 600);
 		setLocationRelativeTo(null);
 	
 		JPanel mainPanel = new JPanel(); 
@@ -112,10 +114,20 @@ public class ImageCopyrighter extends JFrame implements ActionListener {
 	    controlPanel.add(selectFilesBtn);
 	
 	    //Font]
+	    JPanel fontPanel = new JPanel();
+	    fontPanel.setLayout(new GridLayout(0, 2, 2, 2));
+	    
 	    JLabel fontSelLb = new JLabel("Выберите шрифт:");
 	    fontCbx = new FontComboBox();
 	    controlPanel.add(fontSelLb);
-	    controlPanel.add(fontCbx);
+	    
+	    JButton colorSizeBtn = new JButton("Цвет шрифта");
+	    colorSizeBtn.setActionCommand("colorSizeBtn");
+	    colorSizeBtn.addActionListener(this);
+	    
+	    fontPanel.add(fontCbx);
+	    fontPanel.add(colorSizeBtn);
+	    controlPanel.add(fontPanel);
 	    
 	    prevControlPanel.add(controlPanel, BorderLayout.SOUTH);
 	    mainPanel.add(prevControlPanel);
@@ -281,6 +293,13 @@ public class ImageCopyrighter extends JFrame implements ActionListener {
 				}
 			};
 			filesLoader.execute();
+		}
+		
+		//Select font size & color
+		if (aCommand.equalsIgnoreCase("colorSizeBtn")) {
+			
+			new FontColorSizeDialog(this);
+			System.out.println("color: " + fontColor + " size: " + fontSize);
 		}
 		
 	}
