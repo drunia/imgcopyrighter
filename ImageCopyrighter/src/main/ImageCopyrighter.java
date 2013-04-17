@@ -46,6 +46,7 @@ public class ImageCopyrighter extends JFrame implements ActionListener {
 	private static final long serialVersionUID = 1L;
 	private JPanel controlPanel;
 	private JButton selectFilesBtn;
+	private JButton doItBtn;
 	private JTextField textField;
 	private ImageList imgList;
 	private JProgressBar progress;
@@ -130,11 +131,21 @@ public class ImageCopyrighter extends JFrame implements ActionListener {
 	    selectFilesBtn.addActionListener(this);
 	    ImageIcon imgIc = new ImageIcon(getClass().getResource("/res/gtk_directory.png"));
 	    selectFilesBtn.setIcon(imgIc);
+
+	    //DoIt button
+	    doItBtn = new JButton("Обработать все");
+	    doItBtn.setIcon(new ImageIcon(getClass().getResource("/res/start.gif")));
+	    doItBtn.setVisible(false);
+	    
+	    JPanel doItPanel = new JPanel(new GridLayout(0, 2, 5, 5));
+	    doItPanel.add(selectFilesBtn);
+	    doItPanel.add(doItBtn);
+	    
 	    gbc.fill = GridBagConstraints.HORIZONTAL;
 	    gbc.gridx = 1;
 	    gbc.gridy = 0;
 	    gbc.weightx = 0.8;
-	    controlPanel.add(selectFilesBtn, gbc);
+	    controlPanel.add(doItPanel, gbc);
 	
 	    //Font]
 	    JPanel fontPanel = new JPanel();
@@ -237,8 +248,6 @@ public class ImageCopyrighter extends JFrame implements ActionListener {
 		//Label
 		infoLb = new JLabel();
 		infoLb.setFont(new Font(null, Font.BOLD | Font.ITALIC, 14));
-		ImageIcon icon = new ImageIcon(getClass().getResource("/res/info_icon.png"));
-		infoLb.setIcon(icon);
 		msgPanel.add(infoLb);
 		infoPanel.add(msgPanel);
 		
