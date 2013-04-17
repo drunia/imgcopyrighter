@@ -107,7 +107,7 @@ class ImageLabel extends JLabel {
 	 * Default constructor
 	 */
 	public ImageLabel() {
-		setPreferredSize(new Dimension(-1, 48));
+		setPreferredSize(new Dimension(-1, 64));
 	}
 	
 	/**

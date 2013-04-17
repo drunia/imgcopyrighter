@@ -224,7 +224,7 @@ public class ImageCopyrighter extends JFrame implements ActionListener {
 		//Info panels
 		JPanel infoPanel = new JPanel(new GridLayout(1, 2, 10, 5));
 		infoPanel.setBorder(BorderFactory.createTitledBorder(grayBorder, "Информационная панель:"));
-		infoPanel.setPreferredSize(new Dimension(-1, 75));
+		infoPanel.setPreferredSize(new Dimension(-1, 50));
 		
 		JPanel msgPanel = new JPanel();
 		msgPanel.setLayout(new BoxLayout(msgPanel, BoxLayout.X_AXIS));
