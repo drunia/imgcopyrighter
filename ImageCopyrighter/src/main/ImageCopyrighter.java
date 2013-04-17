@@ -98,7 +98,7 @@ public class ImageCopyrighter extends JFrame implements ActionListener {
 		imgList.setImgIconed(true);
 		JScrollPane spane = new JScrollPane(imgList);
 		spane.setBorder(grayBorder);
-		spane.setPreferredSize(new Dimension(350, -1));
+		spane.setPreferredSize(new Dimension(300, -1));
 		mainPanel.add(spane, BorderLayout.WEST);
 		
 		//Preview & controls panel
