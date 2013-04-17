@@ -250,7 +250,7 @@ public class ImageCopyrighter extends JFrame implements ActionListener {
 			
 			@Override
 			public void valueChanged(ListSelectionEvent e) {
-				if (e.getValueIsAdjusting()) return;
+				if (!e.getValueIsAdjusting()) return;
 
 				ImageList l = (ImageList) e.getSource();
 				lastIndex =  l.getSelectedIndex();
@@ -260,7 +260,7 @@ public class ImageCopyrighter extends JFrame implements ActionListener {
 				
 				final File image = lb.getImageFile();
 				final BufferedImage img;
-				
+				System.out.println("read new" + System.nanoTime());
 				try {
 					img = ImageIO.read(image);
 					
@@ -392,15 +392,16 @@ public class ImageCopyrighter extends JFrame implements ActionListener {
 			
 			//Generate event for recreating preview 
 			ListSelectionListener lsl = imgList.getListSelectionListeners()[0];
-			ListSelectionEvent lse = new ListSelectionEvent(imgList, 0, 0, false);
+			ListSelectionEvent lse = new ListSelectionEvent(imgList, 0, 0, true);
 			lsl.valueChanged(lse);
 		}
 		
 		//Select font 
 		if (aCommand.equalsIgnoreCase("fontCbx")) {
+			System.out.println("font changed at:" +e.getWhen());
 			//Generate event for recreating preview 
 			ListSelectionListener lsl = imgList.getListSelectionListeners()[0];
-			ListSelectionEvent lse = new ListSelectionEvent(imgList, 0, 0, false);
+			ListSelectionEvent lse = new ListSelectionEvent(imgList, 0, 0, true);
 			lsl.valueChanged(lse);
 		}
 		
@@ -408,7 +409,7 @@ public class ImageCopyrighter extends JFrame implements ActionListener {
 		if (aCommand.equalsIgnoreCase("orientCbx")) {
 			//Generate event for recreating preview 
 			ListSelectionListener lsl = imgList.getListSelectionListeners()[0];
-			ListSelectionEvent lse = new ListSelectionEvent(imgList, 0, 0, false);
+			ListSelectionEvent lse = new ListSelectionEvent(imgList, 0, 0, true);
 			lsl.valueChanged(lse);
 		}
 		

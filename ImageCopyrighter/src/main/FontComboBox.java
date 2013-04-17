@@ -55,6 +55,8 @@ public class FontComboBox extends JComboBox implements ActionListener {
 		setRenderer(new FontCbxCellRenderer());
 		setEditable(false);
 		addActionListener(this);
+		//Set default first font in list
+		selectedFont = (String) getSelectedItem();
 	}
 	
 	/**
