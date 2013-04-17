@@ -97,7 +97,7 @@ public class ImagePreview extends JPanel {
 		this.fontColor = color;
 		this.orientation = orientation;
 		
-		//Build preview
+		/*//Build preview
 		Image img = null;
 		if (image.getWidth() > image.getHeight()) { 
 			img = image.getScaledInstance(getWidth(), -1, Image.SCALE_FAST);
@@ -108,7 +108,34 @@ public class ImagePreview extends JPanel {
 			if (getHeight() > getWidth()) 
 				img = img.getScaledInstance(-1, getWidth(), Image.SCALE_FAST);
 		}
+		*/
+		Image img = image.getScaledInstance(-1, getWidth(), Image.SCALE_FAST);;
+
+		int h = image.getHeight();
+		int w = image.getWidth();
+		int max = Math.max(h, w);
+		int min = Math.min(h, w);
+		double presc = (double) max / min;
 		
+		System.out.println("prec:" + presc);
+		int h1 = 0, w1 = 0;
+		
+		if (w > h) {
+			if (getWidth() > getHeight()) {
+				h1 = getHeight();
+				w1 = (int) (h1 * presc);
+			} else {
+				w1 = getWidth();
+				h1 = (int) (w1 / presc);
+			}
+		} else {
+			
+		}
+		
+		img = image.getScaledInstance(w1, h1, Image.SCALE_FAST);
+		
+					
+			
 		if (previewImage != null) previewImage.flush();
 		previewImage = new BufferedImage(img.getWidth(null), img.getHeight(null), BufferedImage.TYPE_INT_ARGB);
 		Graphics2D g2d = previewImage.createGraphics();

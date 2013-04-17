@@ -135,11 +135,11 @@ public class ImageCopyrighter extends JFrame implements ActionListener {
 	    //DoIt button
 	    doItBtn = new JButton("Обработать все");
 	    doItBtn.setIcon(new ImageIcon(getClass().getResource("/res/start.gif")));
-	    doItBtn.setVisible(false);
+	    doItBtn.setVisible(true);
 	    
 	    JPanel doItPanel = new JPanel(new GridLayout(0, 2, 5, 5));
-	    doItPanel.add(selectFilesBtn);
 	    doItPanel.add(doItBtn);
+	    doItPanel.add(selectFilesBtn);
 	    
 	    gbc.fill = GridBagConstraints.HORIZONTAL;
 	    gbc.gridx = 1;
