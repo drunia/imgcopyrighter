@@ -13,14 +13,11 @@ import java.awt.Point;
 import java.awt.RenderingHints;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.util.Arrays;
 
 import javax.imageio.ImageIO;
 import javax.swing.BorderFactory;
@@ -145,7 +142,7 @@ public class ImageCopyrighter extends JFrame implements ActionListener {
 	    gbc.fill = GridBagConstraints.HORIZONTAL;
 	    gbc.gridx = 1;
 	    gbc.gridy = 0;
-	    gbc.weightx = 0.8;
+	    gbc.weightx = 0.7;
 	    controlPanel.add(doItPanel, gbc);
 	
 	    //Font]
@@ -175,7 +172,7 @@ public class ImageCopyrighter extends JFrame implements ActionListener {
 	    gbc.fill = GridBagConstraints.HORIZONTAL;
 	    gbc.gridx = 1;
 	    gbc.gridy = 1;
-	    gbc.weightx = 0.8;
+	    gbc.weightx = 0.7;
 	    controlPanel.add(fontPanel, gbc);
 	    
 	    //Text
@@ -205,7 +202,7 @@ public class ImageCopyrighter extends JFrame implements ActionListener {
 	    gbc.fill = GridBagConstraints.HORIZONTAL;
 	    gbc.gridx = 1;
 	    gbc.gridy = 2;
-	    gbc.weightx = 0.8;
+	    gbc.weightx = 0.7;
 	    controlPanel.add(textField, gbc);
 	    
 	    //Orientation
@@ -227,7 +224,7 @@ public class ImageCopyrighter extends JFrame implements ActionListener {
 	    gbc.fill = GridBagConstraints.HORIZONTAL;
 	    gbc.gridx = 1;
 	    gbc.gridy = 3;
-	    gbc.weightx = 0.8;
+	    gbc.weightx = 0.7;
 	    controlPanel.add(orientCbx, gbc);
 	    
 	    prevControlPanel.add(controlPanel, BorderLayout.SOUTH);
@@ -236,8 +233,7 @@ public class ImageCopyrighter extends JFrame implements ActionListener {
 	    
 		//Info panels
 		JPanel infoPanel = new JPanel(new GridLayout(1, 2, 10, 5));
-		infoPanel.setBorder(BorderFactory.createTitledBorder(grayBorder, "Информационная панель:"));
-		infoPanel.setPreferredSize(new Dimension(-1, 50));
+		infoPanel.setPreferredSize(new Dimension(-1, 30));
 		
 		JPanel msgPanel = new JPanel();
 		msgPanel.setLayout(new BoxLayout(msgPanel, BoxLayout.X_AXIS));
