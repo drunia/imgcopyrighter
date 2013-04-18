@@ -54,9 +54,19 @@ public class FontComboBox extends JComboBox implements ActionListener {
 		}
 		setRenderer(new FontCbxCellRenderer());
 		setEditable(false);
-		addActionListener(this);
-		//Set default first font in list
 		selectedFont = (String) getSelectedItem();
+	}
+	
+	/**
+	 * Add ActionListener overrided for:
+	 * <b>this</b> may be first in queue
+	 * @param l - {@link ActionListener}
+	 */
+	@Override
+	public void addActionListener(ActionListener l) {
+		removeActionListener(this);
+		super.addActionListener(l);
+		super.addActionListener(this);
 	}
 	
 	/**
@@ -64,8 +74,7 @@ public class FontComboBox extends JComboBox implements ActionListener {
 	 */
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		FontComboBox fc = (FontComboBox) e.getSource();
-		selectedFont = (String) fc.getSelectedItem();
+		selectedFont = (String) getSelectedItem();
 	}
 	
 	/**

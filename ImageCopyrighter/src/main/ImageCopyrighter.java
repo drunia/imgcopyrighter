@@ -20,6 +20,7 @@ import java.awt.event.KeyListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
 
 import javax.imageio.ImageIO;
 import javax.swing.BorderFactory;
@@ -157,6 +158,7 @@ public class ImageCopyrighter extends JFrame implements ActionListener {
 	    fontCbx = new FontComboBox();
 	    fontCbx.setActionCommand("fontCbx");
 	    fontCbx.addActionListener(this);
+	    
 	    gbc.fill = GridBagConstraints.HORIZONTAL;
 	    gbc.gridx = 0;
 	    gbc.gridy = 1;
@@ -269,7 +271,6 @@ public class ImageCopyrighter extends JFrame implements ActionListener {
 				
 				final File image = lb.getImageFile();
 				final BufferedImage img;
-				System.out.println("read new" + System.nanoTime());
 				try {
 					img = ImageIO.read(image);
 					
@@ -407,7 +408,6 @@ public class ImageCopyrighter extends JFrame implements ActionListener {
 		
 		//Select font 
 		if (aCommand.equalsIgnoreCase("fontCbx")) {
-			System.out.println("font changed at:" +e.getWhen());
 			//Generate event for recreating preview 
 			ListSelectionListener lsl = imgList.getListSelectionListeners()[0];
 			ListSelectionEvent lse = new ListSelectionEvent(imgList, 0, 0, true);
