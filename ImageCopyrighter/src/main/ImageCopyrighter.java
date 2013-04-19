@@ -13,8 +13,13 @@ import java.awt.Point;
 import java.awt.RenderingHints;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
+import java.awt.event.ComponentListener;
+import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -24,9 +29,14 @@ import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 import javax.swing.JScrollPane;
@@ -35,12 +45,13 @@ import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
 import javax.swing.UIManager;
 import javax.swing.border.Border;
+import javax.swing.event.AncestorListener;
+import javax.swing.event.ChangeListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
 
 public class ImageCopyrighter extends JFrame implements ActionListener {
-	private final String APP_NAME = "ImageCopyrighter";
 	private static final long serialVersionUID = 1L;
 	private JPanel controlPanel;
 	private JButton selectFilesBtn;
@@ -52,7 +63,7 @@ public class ImageCopyrighter extends JFrame implements ActionListener {
 	private FontComboBox fontCbx;
 	private JComboBox orientCbx;
 	private ImagePreview iPview;
-	public Color fontColor = Color.ORANGE;
+	public Color fontColor = Color.RED;
 	public int fontSize = 14;
 	
 	static int a;
@@ -67,7 +78,7 @@ public class ImageCopyrighter extends JFrame implements ActionListener {
 		try {
 			UIManager.setLookAndFeel("com.sun.java.swing.plaf.nimbus.NimbusLookAndFeel");
 		} catch (Exception e) {}
-			
+		
 		SwingUtilities.invokeLater(new Runnable() {	
 			@Override
 			public void run() {
@@ -78,15 +89,71 @@ public class ImageCopyrighter extends JFrame implements ActionListener {
 	}
 	
 	/**
+	 * Create main menu 
+	 * @return JMenuBar
+	 */
+	private JMenuBar createMainMenu() {
+		JMenuBar menuBar = new JMenuBar();
+		JMenu settMenu = new JMenu("Настройки");
+		settMenu.setIcon(null);
+		JMenu questionMenu = new JMenu("?");
+		questionMenu.setIcon(null);
+		
+		JCheckBoxMenuItem cbxUseIconedListMenuItem = new JCheckBoxMenuItem(
+				"Иконизированый список (медленно)");
+		Settings s = Settings.getSettings("icr.conf");
+		cbxUseIconedListMenuItem.setSelected(s.readBoolean("useIconedList"));
+		cbxUseIconedListMenuItem.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				JCheckBoxMenuItem i = (JCheckBoxMenuItem) e.getSource();
+				Settings s = Settings.getSettings("icr.conf");
+				s.write("useIconedList", i.isSelected());
+			}
+		});
+
+		JMenuItem aboutMenuItem = new JMenuItem("О программе", null);
+		aboutMenuItem.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				String aboutApp = "Программа для наложения " +
+						"текста на изображения\nАвтор: Андрюнин Дмитрий (drunia)";
+				JOptionPane.showMessageDialog(null, aboutApp, "О программе",
+						JOptionPane.INFORMATION_MESSAGE);
+			}
+		});
+		
+		settMenu.add(cbxUseIconedListMenuItem);
+		questionMenu.add(aboutMenuItem);
+		
+		menuBar.add(settMenu);
+		menuBar.add(questionMenu);
+		return menuBar;
+	}
+	
+	/**
 	 * Default constructor
 	 */
 	public ImageCopyrighter() {
 		super("ImageCopyright by drunia");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setSize(800, 500);
-		//setMinimumSize(new Dimension(800, 500));
 		setLocationRelativeTo(null);
-	
+		addWindowListener(new WindowAdapter() {
+			@Override
+			public void windowClosing(WindowEvent e) {
+				try {
+					Settings.getSettings("icr.conf").save();
+				} catch (Exception e1) {
+					e1.printStackTrace();
+				}
+				super.windowClosing(e);
+			}
+		});
+		
+		//MainMenu
+		setJMenuBar(createMainMenu());
+		
 		JPanel mainPanel = new JPanel(); 
 		mainPanel.setLayout(new BorderLayout(5, 5));
 		
@@ -184,17 +251,13 @@ public class ImageCopyrighter extends JFrame implements ActionListener {
 	    controlPanel.add(textLb, gbc);
 	    
 	    textField = new JTextField(100);
-	    textField.addKeyListener(new KeyListener() {
-			@Override
-			public void keyTyped(KeyEvent e) {}
-			@Override
-			public void keyReleased(KeyEvent e) {}
-			@Override
+	    textField.addKeyListener(new KeyAdapter() {
+	    	@Override
 			public void keyPressed(KeyEvent e) {
 				if (e.getKeyCode() != KeyEvent.VK_ENTER) return;
 				//Generate event for recreating preview 
 				ListSelectionListener lsl = imgList.getListSelectionListeners()[0];
-				ListSelectionEvent lse = new ListSelectionEvent(imgList, 0, 0, false);
+				ListSelectionEvent lse = new ListSelectionEvent(imgList, 0, 0, true);
 				lsl.valueChanged(lse);
 			}
 		});

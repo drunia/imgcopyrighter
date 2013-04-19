@@ -2,6 +2,7 @@ package main;
 
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GraphicsEnvironment;
 import java.awt.event.ActionEvent;
@@ -26,6 +27,15 @@ public class FontComboBox extends JComboBox implements ActionListener {
 	 */
 	class FontCbxCellRenderer extends JLabel implements ListCellRenderer {
 		private static final long serialVersionUID = 1L;
+		
+		/**
+		 * Default constructor
+		 * Must be for setPreferedSize component
+		 */
+		public FontCbxCellRenderer() {
+			super();
+			setPreferredSize(new Dimension(0, 25));
+		}
 		
 		@Override
 		public Component getListCellRendererComponent(JList list, Object value,
