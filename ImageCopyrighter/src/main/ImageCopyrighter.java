@@ -13,9 +13,6 @@ import java.awt.Point;
 import java.awt.RenderingHints;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
-import java.awt.event.ComponentListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
@@ -45,8 +42,6 @@ import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
 import javax.swing.UIManager;
 import javax.swing.border.Border;
-import javax.swing.event.AncestorListener;
-import javax.swing.event.ChangeListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
@@ -65,6 +60,8 @@ public class ImageCopyrighter extends JFrame implements ActionListener {
 	private ImagePreview iPview;
 	public Color fontColor = Color.RED;
 	public int fontSize = 14;
+	private Settings s;
+	private String settingsFile = "icr.conf";
 	
 	static int a;
 	
@@ -74,7 +71,9 @@ public class ImageCopyrighter extends JFrame implements ActionListener {
 	 * @param args - array of parameters from command line 
 	 */
 	public static void main(String[] args) {
-		//Set Nimbus LookAndFeel if exist
+		/*
+		 * Set Nimbus LookAndFeel if exist
+		 */
 		try {
 			UIManager.setLookAndFeel("com.sun.java.swing.plaf.nimbus.NimbusLookAndFeel");
 		} catch (Exception e) {}
@@ -101,13 +100,11 @@ public class ImageCopyrighter extends JFrame implements ActionListener {
 		
 		JCheckBoxMenuItem cbxUseIconedListMenuItem = new JCheckBoxMenuItem(
 				"Иконизированый список (медленно)");
-		Settings s = Settings.getSettings("icr.conf");
 		cbxUseIconedListMenuItem.setSelected(s.readBoolean("useIconedList"));
 		cbxUseIconedListMenuItem.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				JCheckBoxMenuItem i = (JCheckBoxMenuItem) e.getSource();
-				Settings s = Settings.getSettings("icr.conf");
 				s.write("useIconedList", i.isSelected());
 			}
 		});
@@ -139,11 +136,17 @@ public class ImageCopyrighter extends JFrame implements ActionListener {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setSize(800, 500);
 		setLocationRelativeTo(null);
+		
+		/*
+		 * Init settings
+		 */
+		s = Settings.getSettings(settingsFile);
+		
 		addWindowListener(new WindowAdapter() {
 			@Override
 			public void windowClosing(WindowEvent e) {
 				try {
-					Settings.getSettings("icr.conf").save();
+					s.save();
 				} catch (Exception e1) {
 					e1.printStackTrace();
 				}
@@ -151,7 +154,9 @@ public class ImageCopyrighter extends JFrame implements ActionListener {
 			}
 		});
 		
-		//MainMenu
+		/*
+		 * MainMenu
+		 */
 		setJMenuBar(createMainMenu());
 		
 		JPanel mainPanel = new JPanel(); 
@@ -159,7 +164,9 @@ public class ImageCopyrighter extends JFrame implements ActionListener {
 		
 		Border grayBorder = BorderFactory.createLineBorder(Color.LIGHT_GRAY);
 		
-		//ImageList
+		/*
+		 * ImageList
+		 */
 		imgList = new ImageList();
 		imgList.setImgIconed(true);
 		JScrollPane spane = new JScrollPane(imgList);
@@ -167,22 +174,30 @@ public class ImageCopyrighter extends JFrame implements ActionListener {
 		spane.setPreferredSize(new Dimension(300, -1));
 		mainPanel.add(spane, BorderLayout.WEST);
 		
-		//Preview & controls panel
+		/*
+		 * Preview & controls panel
+		 */
 		JPanel prevControlPanel = new JPanel();
 		prevControlPanel.setLayout(new BorderLayout(1, 5));
 		
-		//Preview panel
+		/*
+		 * Preview panel
+		 */
 	    iPview = new ImagePreview();
 	    prevControlPanel.add(iPview, BorderLayout.CENTER);
 	    
-	    //Control panel
+	    /*
+	     * Control panel
+	     */
 	    controlPanel = new JPanel();
 	    controlPanel.setLayout(new GridBagLayout());
 	    controlPanel.setBorder(grayBorder);
 	    
 	    GridBagConstraints gbc = new GridBagConstraints();
 	    
-	    //Select files
+	    /*
+	     * Select files
+	     */
 	    JLabel selFilesLb = new JLabel("Выберите файлы:");
 	    selFilesLb.setPreferredSize(new Dimension(150, 25));
 	    gbc.fill = GridBagConstraints.HORIZONTAL;
@@ -197,7 +212,9 @@ public class ImageCopyrighter extends JFrame implements ActionListener {
 	    ImageIcon imgIc = new ImageIcon(getClass().getResource("/res/gtk_directory.png"));
 	    selectFilesBtn.setIcon(imgIc);
 
-	    //DoIt button
+	    /*
+	     * DoIt button
+	     */
 	    doItBtn = new JButton("Обработать все");
 	    doItBtn.setIcon(new ImageIcon(getClass().getResource("/res/start.gif")));
 	    doItBtn.setVisible(true);
@@ -212,7 +229,9 @@ public class ImageCopyrighter extends JFrame implements ActionListener {
 	    gbc.weightx = 0.7;
 	    controlPanel.add(doItPanel, gbc);
 	
-	    //Font]
+	    /*
+	     * Font
+	     */
 	    JPanel fontPanel = new JPanel();
 	    fontPanel.setLayout(new GridLayout(0, 2, 2, 2));
 	    fontPanel.setMinimumSize(new Dimension(300, 25));
@@ -242,7 +261,9 @@ public class ImageCopyrighter extends JFrame implements ActionListener {
 	    gbc.weightx = 0.7;
 	    controlPanel.add(fontPanel, gbc);
 	    
-	    //Text
+	    /*
+	     * Text
+	     */
 	    JLabel textLb = new JLabel("Введите текст:");
 	    gbc.fill = GridBagConstraints.HORIZONTAL;
 	    gbc.gridx = 0;
@@ -268,7 +289,9 @@ public class ImageCopyrighter extends JFrame implements ActionListener {
 	    gbc.weightx = 0.7;
 	    controlPanel.add(textField, gbc);
 	    
-	    //Orientation
+	    /*
+	     * Orientation
+	     */
 	    JLabel orientLb = new JLabel("Расположение текста:");
 	    gbc.fill = GridBagConstraints.HORIZONTAL;
 	    gbc.gridx = 0;
@@ -294,19 +317,25 @@ public class ImageCopyrighter extends JFrame implements ActionListener {
 	    mainPanel.add(prevControlPanel);
 	    add(mainPanel, BorderLayout.CENTER);
 	    
-		//Info panels
+		/*
+		 * Info panels
+		 */
 		JPanel infoPanel = new JPanel(new GridLayout(1, 2, 10, 5));
 		infoPanel.setPreferredSize(new Dimension(-1, 30));
 		
 		JPanel msgPanel = new JPanel();
 		msgPanel.setLayout(new BoxLayout(msgPanel, BoxLayout.X_AXIS));
 	
-		//ProgressBar	
+		/*
+		 * ProgressBar	
+		 */
 		progress = new JProgressBar(0, 100);
 		progress.setVisible(false);
 		infoPanel.add(progress);
 		
-		//Label
+		/*
+		 * Label
+		 */
 		infoLb = new JLabel();
 		infoLb.setFont(new Font(null, Font.BOLD | Font.ITALIC, 14));
 		msgPanel.add(infoLb);
@@ -314,7 +343,9 @@ public class ImageCopyrighter extends JFrame implements ActionListener {
 		
 		add(infoPanel, BorderLayout.SOUTH);
 	    
-	    //ImageList selection handler
+	    /*
+	     * ImageList selection handler
+	     */
 		imgList.addListSelectionListener(new  ListSelectionListener() {
 			private int lastIndex;
 			
