@@ -48,6 +48,7 @@ import javax.swing.event.ListSelectionListener;
 
 public class ImageCopyrighter extends JFrame implements ActionListener {
 	private static final long serialVersionUID = 1L;
+	public final static String APP_VER = "1";
 	private JPanel controlPanel;
 	private JButton selectFilesBtn;
 	private JButton doItBtn;
@@ -114,7 +115,8 @@ public class ImageCopyrighter extends JFrame implements ActionListener {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				String aboutApp = "Программа для наложения " +
-						"текста на изображения\nАвтор: Андрюнин Дмитрий (drunia)";
+						"текста на изображения\nАвтор: Андрюнин Дмитрий (drunia)\n" +
+						"Версия программы: " + APP_VER;
 				JOptionPane.showMessageDialog(null, aboutApp, "О программе",
 						JOptionPane.INFORMATION_MESSAGE);
 			}
@@ -132,7 +134,7 @@ public class ImageCopyrighter extends JFrame implements ActionListener {
 	 * Default constructor
 	 */
 	public ImageCopyrighter() {
-		super("ImageCopyright by drunia");
+		super("ImageCopyright ver. " + APP_VER);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setSize(800, 500);
 		setLocationRelativeTo(null);
@@ -316,6 +318,12 @@ public class ImageCopyrighter extends JFrame implements ActionListener {
 	    prevControlPanel.add(controlPanel, BorderLayout.SOUTH);
 	    mainPanel.add(prevControlPanel);
 	    add(mainPanel, BorderLayout.CENTER);
+	    
+	    /**
+	     * Logo
+	     */
+	    JLabel logoLb = new JLabel("Логотип (ватермарк):");
+	    
 	    
 		/*
 		 * Info panels

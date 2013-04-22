@@ -49,7 +49,7 @@ public class Settings {
 	@SuppressWarnings("unchecked")
 	private LinkedHashMap<String, Object> readSettings() throws Exception {
 		File f = new File(fileName);
-		if (!f.exists()) f.createNewFile();
+		if (!f.exists()) return new LinkedHashMap<String, Object>();
 		ObjectInputStream ois = new ObjectInputStream(new FileInputStream(f));
 		Object readedObj = ois.readObject();
 		ois.close();
