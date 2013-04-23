@@ -141,7 +141,6 @@ public class ImagePreview extends JPanel {
 		imgConf.setText(text);
 		
 		//Prepared coordinates
-		logoCoords = imgConf.getLogoCoords();
 		textCoords = imgConf.getTextCoords();
 		
 		//Draw on panel coordinates
@@ -152,6 +151,7 @@ public class ImagePreview extends JPanel {
 		g2d.setFont(imgConf.getFont());
 		if (logo != null) {
 			imgConf.setLogo(logo);
+			logoCoords = imgConf.getLogoCoords();
 			g2d.drawImage(logo, logoCoords.x, logoCoords.y, null);
 		}
 		g2d.setColor(color);

@@ -28,6 +28,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JComboBox;
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JMenu;
@@ -37,11 +38,15 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 import javax.swing.JScrollPane;
+import javax.swing.JSlider;
+import javax.swing.JSpinner;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
 import javax.swing.UIManager;
 import javax.swing.border.Border;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
@@ -63,6 +68,7 @@ public class ImageCopyrighter extends JFrame implements ActionListener {
 	public int fontSize = 14;
 	private Settings s;
 	private String settingsFile = "icr.conf";
+	private BufferedImage logo;
 	
 	static int a;
 	
@@ -323,7 +329,32 @@ public class ImageCopyrighter extends JFrame implements ActionListener {
 	     * Logo
 	     */
 	    JLabel logoLb = new JLabel("Логотип (ватермарк):");
+	    gbc.fill = GridBagConstraints.HORIZONTAL;
+	    gbc.gridx = 0;
+	    gbc.gridy = 4;
+	    gbc.weightx = 1;
+	    controlPanel.add(logoLb, gbc);
 	    
+	    JPanel logoPanel = new JPanel(new GridLayout(0, 2, 3, 3));
+	    gbc.gridx = 1;
+	    gbc.gridy = 4;
+	    gbc.weightx = 0.7;
+	    controlPanel.add(logoPanel, gbc);
+	    
+	    JButton logoBtn = new JButton("Выбрать логотип");
+	    logoBtn.setActionCommand("logoBtn");
+	    logoBtn.addActionListener(this);
+	    logoPanel.add(logoBtn);
+	    
+	    JSlider alphaSlider = new JSlider(0, 100);
+	    alphaSlider.addChangeListener(new ChangeListener() {
+			@Override
+			public void stateChanged(ChangeEvent e) {
+				JSlider slider = (JSlider) e.getSource();
+				System.out.println("slider value: " + slider.getValue());
+			}
+		});
+	    logoPanel.add(alphaSlider);
 	    
 		/*
 		 * Info panels
@@ -382,7 +413,9 @@ public class ImageCopyrighter extends JFrame implements ActionListener {
 							
 							//Set preview
 							Font f = fontCbx.getSelectedFont(0, fontSize);
-							iPview.setPreview(img, null, f, textField.getText(), orientCbx.getSelectedIndex(), fontColor);
+							try {
+								iPview.setPreview(img, logo, f, textField.getText(), orientCbx.getSelectedIndex(), fontColor);
+							} catch (Exception e) {e.printStackTrace();}
 							img.flush();
 							
 							progress.setIndeterminate(false);
@@ -518,6 +551,25 @@ public class ImageCopyrighter extends JFrame implements ActionListener {
 			ListSelectionListener lsl = imgList.getListSelectionListeners()[0];
 			ListSelectionEvent lse = new ListSelectionEvent(imgList, 0, 0, true);
 			lsl.valueChanged(lse);
+		}
+		
+		//Select logo
+		if (aCommand.equalsIgnoreCase("logoBtn")) {
+			ImageFileChooser ifc = new ImageFileChooser(null);
+			ifc.setMultiSelectionEnabled(false);
+			if (ifc.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
+				try {
+					logo = ImageIO.read(ifc.getSelectedFile());
+					//Generate event for recreating preview 
+					ListSelectionListener lsl = imgList.getListSelectionListeners()[0];
+					ListSelectionEvent lse = new ListSelectionEvent(imgList, 0, 0, true);
+					lsl.valueChanged(lse);
+				} catch (IOException e1) {
+					e1.printStackTrace();
+				}
+			}
+			
+			
 		}
 		
 	}
