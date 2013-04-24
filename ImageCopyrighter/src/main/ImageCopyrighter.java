@@ -328,7 +328,7 @@ public class ImageCopyrighter extends JFrame implements ActionListener {
 	    /**
 	     * Logo
 	     */
-	    JLabel logoLb = new JLabel("Логотип (ватермарк):");
+	    JLabel logoLb = new JLabel("Логотип (иконка):");
 	    gbc.fill = GridBagConstraints.HORIZONTAL;
 	    gbc.gridx = 0;
 	    gbc.gridy = 4;

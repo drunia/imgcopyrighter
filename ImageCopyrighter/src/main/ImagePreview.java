@@ -140,9 +140,6 @@ public class ImagePreview extends JPanel {
 		imgConf.setFont(font);
 		imgConf.setText(text);
 		
-		//Prepared coordinates
-		textCoords = imgConf.getTextCoords();
-		
 		//Draw on panel coordinates
 		prevX = (getWidth() / 2) - (previewImage.getWidth() / 2);
 		prevY = (getHeight() / 2) - (previewImage.getHeight() / 2);
@@ -150,10 +147,21 @@ public class ImagePreview extends JPanel {
 		//Draw copyright
 		g2d.setFont(imgConf.getFont());
 		if (logo != null) {
-			imgConf.setLogo(logo);
+			double logoPrescW = (double) w / w1;
+			double logoPrescH = (double) h / h1;
+			int logoW = (int) (logo.getWidth() / logoPrescW);
+			int logoH = (int) (logo.getHeight() / logoPrescH);
+			
+			Image l = logo.getScaledInstance(logoW, logoH, Image.SCALE_SMOOTH);
+			BufferedImage b = new BufferedImage(logoW, logoH, BufferedImage.TYPE_INT_ARGB);
+			Graphics2D bg = b.createGraphics();
+			bg.drawImage(l, 0, 0, null);
+			
+			imgConf.setLogo(b);
 			logoCoords = imgConf.getLogoCoords();
-			g2d.drawImage(logo, logoCoords.x, logoCoords.y, null);
+			g2d.drawImage(b, logoCoords.x, logoCoords.y, null);
 		}
+		textCoords = imgConf.getTextCoords();
 		g2d.setColor(color);
 		g2d.drawString(imgConf.getText(), textCoords.x, textCoords.y);
 		g2d.dispose();

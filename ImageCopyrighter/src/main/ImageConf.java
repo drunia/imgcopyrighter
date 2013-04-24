@@ -106,68 +106,76 @@ public class ImageConf {
 		textHeight = fm.getHeight();
 		int x = 0, y = 0;	
 		
-		//Calculate indents 1 % from image size
-		int indentX = (imgW / 100);
-		int indentY = (imgH / 100);
+		//Calculate indent
+		int indent = textHeight / 4;
 		
 		//Calculate orientation
 		switch (orientation) {
 			case ORIENTATION_TOPLEFT:
-				x = indentX;
-				y = indentY;
+				x = indent;
+				y = textHeight - indent;
 				break;
 			case ORIENTATION_TOPCENTER:
 				x = (imgW / 2) - (textWidth / 2); 
-				y = indentY;
+				y = textHeight - indent;
 				break;
 			case ORIENTATION_TOPRIGHT:
 				x = imgW - textWidth; 
-				y = indentY; 
+				y = textHeight - indent; 
 				break;
 			case ORIENTATION_CENTER:
 				x = (imgW / 2) - (textWidth / 2); 
 				y = (imgH / 2) - (textHeight / 2); 
 				break;
 			case ORIENTATION_BOTTOMLEFT:
-				x = indentX;
-				y = imgH - textHeight;
+				x = indent;
+				y = imgH - indent;
 				break;
 			case ORIENTATION_BOTTOMCENTER:
 				x = (imgW / 2) - (textWidth / 2); 
-				y = imgH - textHeight;
+				y = imgH - indent;
 				break;
 			case ORIENTATION_BOTTOMRIGHT:
-				x = imgW - (textWidth + indentX);
-				y = imgH - textHeight;
+				x = imgW - (textWidth + indent);
+				y = imgH - indent;
 				break;
 		}	
 		
 		if (logoImg == null) {
-			textPoint = new Point(x, y + (textHeight / 2));
+			textPoint = new Point(x, y);
 		} else {
+			y -= indent;
+			int h = logoImg.getHeight();
+			int w = logoImg.getWidth();
+			
 			logoPoint = new Point(x, y);
-			textPoint = new Point(x + logoImg.getWidth(),
-					y + ((logoImg.getHeight() / 2) + (textHeight / 3)));
+			textPoint = new Point(x + w, y + (h / 2) + indent);
 			switch (orientation) {
+				case ORIENTATION_TOPCENTER:
+					logoPoint = new Point(x - (w / 2), y);
+					textPoint = new Point(x + (w / 2), y + (h / 2) + indent);
+					break;
 				case ORIENTATION_TOPRIGHT:
-					logoPoint = new Point(x - logoImg.getWidth(), y);
-					textPoint = new Point(x,
-							logoPoint.y + ((logoImg.getHeight() / 2) + (textHeight / 3)));
+					logoPoint = new Point(x - w, y);
+					textPoint = new Point(x, y + (h / 2) + indent);
+					break;
+				case ORIENTATION_CENTER:	
+					logoPoint = new Point(x - (w / 2), y - (h / 2));
+					textPoint = new Point(x + (w / 2), y + indent);
 					break;
 				case ORIENTATION_BOTTOMCENTER:
+					logoPoint = new Point(x - (w / 2), y - h);
+					textPoint = new Point(x + (w / 2), y - (h / 2) + indent);
+					break;
 				case ORIENTATION_BOTTOMRIGHT:
-					y += textHeight;
-					logoPoint = new Point(x - logoImg.getWidth(), y - logoImg.getHeight());
-					textPoint = new Point(x,
-							logoPoint.y + ((logoImg.getHeight() / 2) + (textHeight / 3)));
+					logoPoint = new Point(x - w, y - h);
+					textPoint = new Point(x, y - (h / 2) + indent);
 					break;
 				case ORIENTATION_BOTTOMLEFT:
-					y += textHeight;
-					logoPoint = new Point(x, y - logoImg.getHeight());
-					textPoint = new Point(x + logoImg.getWidth(),
-							logoPoint.y + ((logoImg.getHeight() / 2) + (textHeight / 3)));
+					logoPoint = new Point(x, y - h);
+					textPoint = new Point(x + w, y - (h / 2) + indent);
 					break;
-			}
+			} 
 		}		
 	}
 
