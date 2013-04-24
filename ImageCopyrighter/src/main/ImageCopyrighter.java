@@ -39,7 +39,6 @@ import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 import javax.swing.JScrollPane;
 import javax.swing.JSlider;
-import javax.swing.JSpinner;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
@@ -49,6 +48,8 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+
+import java.util.Hashtable;
 
 
 public class ImageCopyrighter extends JFrame implements ActionListener {
@@ -346,7 +347,11 @@ public class ImageCopyrighter extends JFrame implements ActionListener {
 	    logoBtn.addActionListener(this);
 	    logoPanel.add(logoBtn);
 	    
-	    JSlider alphaSlider = new JSlider(0, 100);
+	    JSlider alphaSlider = new JSlider(0, 100, 0);
+	    Hashtable<Integer, JLabel> lbTable = new Hashtable<Integer, JLabel>();
+	    lbTable.put(50, new JLabel("Прозрачность"));
+	    alphaSlider.setLabelTable(lbTable);
+	    alphaSlider.setPaintLabels(true);
 	    alphaSlider.addChangeListener(new ChangeListener() {
 			@Override
 			public void stateChanged(ChangeEvent e) {
