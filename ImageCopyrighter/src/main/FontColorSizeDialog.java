@@ -81,7 +81,8 @@ public class FontColorSizeDialog extends JDialog implements ActionListener {
 	 */
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		owner.fontColor = colorChooser.getColor();
+		Color c = colorChooser.getColor();
+		owner.fontColor = new Color(c.getRed(), c.getGreen(), c.getBlue(), owner.alpha);
 		owner.fontSize = Integer.parseInt((String) sizeCbx.getSelectedItem());
 		dispose();
 	}

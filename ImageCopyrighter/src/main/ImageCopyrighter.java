@@ -9,6 +9,7 @@ import java.awt.Graphics2D;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
+import java.awt.Image;
 import java.awt.Point;
 import java.awt.RenderingHints;
 import java.awt.event.ActionEvent;
@@ -18,6 +19,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
+import java.awt.image.WritableRaster;
 import java.io.File;
 import java.io.IOException;
 
@@ -70,6 +72,8 @@ public class ImageCopyrighter extends JFrame implements ActionListener {
 	private Settings s;
 	private String settingsFile = "icr.conf";
 	private BufferedImage logo;
+	public int alpha;
+	private JButton colorSizeBtn;
 	
 	static int a;
 	
@@ -257,7 +261,7 @@ public class ImageCopyrighter extends JFrame implements ActionListener {
 	    gbc.weightx = 1;
 	    controlPanel.add(fontSelLb, gbc);
 	    
-	    JButton colorSizeBtn = new JButton("Цвет и размер");
+	    colorSizeBtn = new JButton("Цвет и размер");
 	    colorSizeBtn.setActionCommand("colorSizeBtn");
 	    colorSizeBtn.addActionListener(this);
 	    colorSizeBtn.setIcon(get32х16IconFromFontColorAndSize(fontColor, fontSize));
@@ -347,7 +351,7 @@ public class ImageCopyrighter extends JFrame implements ActionListener {
 	    logoBtn.addActionListener(this);
 	    logoPanel.add(logoBtn);
 	    
-	    JSlider alphaSlider = new JSlider(0, 100, 0);
+	    JSlider alphaSlider = new JSlider(0, 255, 0);
 	    Hashtable<Integer, JLabel> lbTable = new Hashtable<Integer, JLabel>();
 	    lbTable.put(50, new JLabel("Прозрачность"));
 	    alphaSlider.setLabelTable(lbTable);
@@ -356,7 +360,22 @@ public class ImageCopyrighter extends JFrame implements ActionListener {
 			@Override
 			public void stateChanged(ChangeEvent e) {
 				JSlider slider = (JSlider) e.getSource();
-				System.out.println("slider value: " + slider.getValue());
+				alpha = 255 - slider.getValue();
+				Color c = fontColor;
+				fontColor = new Color(c.getRed(), c.getGreen(), c.getBlue(), alpha);
+				colorSizeBtn.setIcon(get32х16IconFromFontColorAndSize(fontColor, fontSize));
+				/*
+				 * Alpha logo
+				 */
+				if (logo != null) {
+					for (int i = 0; i < logo.getHeight(); i++) {
+						for (int j = 0; j < logo.getWidth(); j++) {
+							int rgb = (alpha << 24) | logo.getRGB(j, i) ;
+							//System.out.println(Integer.toHexString(rgb));
+							logo.setRGB(j, i, rgb);
+						}
+					}
+				}
 			}
 		});
 	    logoPanel.add(alphaSlider);
@@ -560,23 +579,29 @@ public class ImageCopyrighter extends JFrame implements ActionListener {
 		
 		//Select logo
 		if (aCommand.equalsIgnoreCase("logoBtn")) {
+			JButton logoBtn = (JButton) e.getSource();
 			ImageFileChooser ifc = new ImageFileChooser(null);
 			ifc.setMultiSelectionEnabled(false);
 			if (ifc.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
 				try {
 					logo = ImageIO.read(ifc.getSelectedFile());
-					//Generate event for recreating preview 
-					ListSelectionListener lsl = imgList.getListSelectionListeners()[0];
-					ListSelectionEvent lse = new ListSelectionEvent(imgList, 0, 0, true);
-					lsl.valueChanged(lse);
+					ImageIcon icon = new ImageIcon(logo.getScaledInstance(24, 24, Image.SCALE_FAST));
+					logoBtn.setIcon(icon);
+					logoBtn.setText(ifc.getSelectedFile().getName());
+
 				} catch (IOException e1) {
 					e1.printStackTrace();
 				}
+			} else {
+				logoBtn.setIcon(null);
+				logoBtn.setText("Выбрать логотип");
+				logo = null;
 			}
-			
-			
+			//Generate event for recreating preview 
+			ListSelectionListener lsl = imgList.getListSelectionListeners()[0];
+			ListSelectionEvent lse = new ListSelectionEvent(imgList, 0, 0, true);
+			lsl.valueChanged(lse);
 		}
-		
 	}
 	
 	/**
