@@ -7,6 +7,7 @@ import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JColorChooser;
 import javax.swing.JComboBox;
@@ -40,7 +41,7 @@ public class FontColorSizeDialog extends JDialog implements ActionListener {
 		setModal(true);
 		setLocation(
 				owner.getLocation().x + owner.getWidth() / 4,
-				owner.getLocation().y + owner.getHeight() / 4);
+				owner.getLocation().y + owner.getHeight() / 8);
 		setResizable(false);
 		
 		//JColorChooser
@@ -67,6 +68,7 @@ public class FontColorSizeDialog extends JDialog implements ActionListener {
 		//Accept button
 		JButton acceptBtn = new JButton("Применить");
 		acceptBtn.setActionCommand("acceptButton");
+		acceptBtn.setIcon(new ImageIcon(getClass().getResource("/res/ok.png")));
 		acceptBtn.addActionListener(this);
 		controlPanel.add(acceptBtn);
 		

@@ -86,10 +86,7 @@ public class Settings {
 	 * @return Boolean
 	 */
 	public boolean readBoolean(String key) {
-		if (store.containsKey(key))
-			return (Boolean) store.get(key);
-		else 
-			return true;
+		return (Boolean) ((store.containsKey(key)) ? store.get(key) : false); 
 	}
 	
 	/**

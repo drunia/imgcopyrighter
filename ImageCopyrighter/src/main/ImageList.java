@@ -140,18 +140,18 @@ class ImageLabel extends JLabel {
 	 * @param size - Image size
 	 */
 	private String calculateHumanImageSize(long imageSize) {
-		double size = 0;
-		String dataName = "Bytes";
+		double size = imageSize;
+		String dataName = "байт";
 		
 		//KBytes
 		if (imageSize > 1024) {
 			size = imageSize / 1024f;
-			dataName = "KBytes";
+			dataName = "Кбайт";
 		}
 		//MBytes
 		if (imageSize > (1024 * 1024)) {
 			size = imageSize / (1024f * 1024f);
-			dataName = "MBytes";
+			dataName = "Мбайт";
 		}
 		return String.format("%.2f %s", size, dataName);
 	}
