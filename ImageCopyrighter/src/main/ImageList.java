@@ -43,7 +43,9 @@ public class ImageList extends JList {
 		for (int i = 0; i < elements.length; i++) {
 			elements[i] = new ImageLabel();
 			elements[i].setImageFile(files[i]);
-			//Initialize icons for list items
+			/*
+			 * Initialize icons for list items
+			 */
 			if (isImgIconed()) {
 				image = new ImageIcon(files[i].getAbsolutePath()).getImage();
 				icon = new ImageIcon(image.getScaledInstance(64, 64, Image.SCALE_FAST));
@@ -123,10 +125,13 @@ class ImageLabel extends JLabel {
 	 * @param imageFile - File of image
 	 */
 	public void setImageFile(File imageFile) {
+		String fileName = imageFile.getName();
+		if (fileName.length() > 30) 
+			fileName = fileName.substring(0, 29) + "...";
 		String html = "<html>" +
 				"<table width=100% border=0 cellspacing=0 cellpadding=5>" +
 				"<tr><td rowspan=2><font size=5 color=green>" + ++itemNumber +
-				"</font></td><td>" + imageFile.getName() + "</td>" + "</tr>" +
+				"</font></td><td>" + fileName + "</td>" + "</tr>" +
 				"<tr><td><code>" + calculateHumanImageSize(imageFile.length()) +
 				"</code></td></tr></table></html>";
 		setText(html);	

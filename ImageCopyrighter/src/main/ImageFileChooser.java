@@ -49,7 +49,7 @@ public class ImageFileChooser extends JFileChooser {
 	 * Default constructor
 	 */
 	public ImageFileChooser(String[] exts) {
-		super();
+		super(new File("."));
 		if (exts != null) this.exts = exts;
 		setMultiSelectionEnabled(true);
 		setAcceptAllFileFilterUsed(false);

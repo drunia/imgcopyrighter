@@ -68,12 +68,14 @@ public class ImageCopyrighter extends JFrame implements ActionListener {
 	private JComboBox orientCbx;
 	private ImagePreview iPview;
 	public Color fontColor = Color.RED;
-	public int fontSize = 14;
+	public int fontSize = 16;
 	private Settings s;
 	private String settingsFile = "icr.conf";
 	private BufferedImage logo;
-	public int alpha;
+	public int alpha = 255;
 	private JButton colorSizeBtn;
+	private JButton logoBtn;
+	private JSlider alphaSlider;
 	private boolean changing;
 	private File[] files;
 	
@@ -334,8 +336,7 @@ public class ImageCopyrighter extends JFrame implements ActionListener {
 	    prevControlPanel.add(controlPanel, BorderLayout.SOUTH);
 	    mainPanel.add(prevControlPanel);
 	    add(mainPanel, BorderLayout.CENTER);
-	    
-	    /**
+	    /*
 	     * Logo
 	     */
 	    JLabel logoLb = new JLabel("Логотип (иконка):");
@@ -351,12 +352,12 @@ public class ImageCopyrighter extends JFrame implements ActionListener {
 	    gbc.weightx = 0.7;
 	    controlPanel.add(logoPanel, gbc);
 	    
-	    JButton logoBtn = new JButton("Выбрать логотип");
+	    logoBtn = new JButton("Выбрать логотип");
 	    logoBtn.setActionCommand("logoBtn");
 	    logoBtn.addActionListener(this);
 	    logoPanel.add(logoBtn);
 	    
-	    JSlider alphaSlider = new JSlider(0, 230, 0);
+	    alphaSlider = new JSlider(0, 230, 0);
 	    Hashtable<Integer, JLabel> lbTable = new Hashtable<Integer, JLabel>();
 	    lbTable.put(115, new JLabel("Прозрачность"));
 	    alphaSlider.setLabelTable(lbTable);
@@ -441,16 +442,19 @@ public class ImageCopyrighter extends JFrame implements ActionListener {
 				final BufferedImage img;
 				try {
 					img = ImageIO.read(image);
-					
-					//Load preview in another thread
+					/*
+					 * Load preview in another thread
+					 */
 					SwingWorker<Void, Void> loader = new SwingWorker<Void, Void>() {
 						@Override
 						protected Void doInBackground() {
 							progress.setVisible(true);
 							progress.setIndeterminate(true);
+							progress.setStringPainted(false);
 							infoLb.setText("Обработка ...");
-							
-							//Set preview
+							/*
+							 * Set preview
+							 */
 							Font f = fontCbx.getSelectedFont(0, fontSize / 2);
 							try {
 								iPview.setPreview(img, logo, f, textField.getText(), orientCbx.getSelectedIndex(), fontColor);
@@ -478,9 +482,12 @@ public class ImageCopyrighter extends JFrame implements ActionListener {
 	 * @param files - array of selected file/s
 	 */
 	public void doIt(final File[] files) {
+		if (changing || files == null || files.length == 0) return;
+		changing = true;
 		SwingWorker<Void, Void> doItWorker = new SwingWorker<Void, Void>() {
 			@Override
 			protected Void doInBackground() throws Exception {
+				enableControls(false);
 				progress.setVisible(true);
 				progress.setIndeterminate(false);
 				progress.setValue(0);
@@ -495,18 +502,47 @@ public class ImageCopyrighter extends JFrame implements ActionListener {
 						drawCopyRight(img);
 						ImageIO.write(img, ext, saveFile);
 						img.flush();
-						progress.setValue((int) (i / files.length) * 100);
-						infoLb.setText("Обработано: " + i);
-					} catch (IOException e) {		
+						int percents = (i + 1) * 100 / files.length;
+						progress.setValue(percents);
+						progress.setString("Обработано: " + percents + "% (" + (i + 1) + "/" + files.length + ")");
+						progress.setStringPainted(true);
+					} catch (IOException e) {
 						e.printStackTrace();
 					}
 				}
 				progress.setVisible(false);
+				progress.setString("");
+				progress.setValue(0);
+				progress.setStringPainted(false);
+				String savePath = files[0].getParentFile().getAbsolutePath();
+				if (!savePath.endsWith(File.separator)) 
+					savePath += File.separator;
+				infoLb.setText("Сохраненно в " + savePath + "icr" + File.separator);
+				Thread.sleep(3000);
 				infoLb.setText("");
+				changing = false;
+				enableControls(true);
 				return null;
 			}
 		};
 		doItWorker.execute();
+	}
+	
+	/**
+	 * Enamble/Disable controls while 
+	 * program process images
+	 * @param state - boolean state
+	 */
+	private void enableControls(boolean state) {
+		imgList.setEnabled(state);
+		selectFilesBtn.setEnabled(state);
+		fontCbx.setEnabled(state);
+		colorSizeBtn.setEnabled(state);
+		orientCbx.setEnabled(state);
+		textField.setEnabled(state);
+		alphaSlider.setEnabled(state);
+		logoBtn.setEnabled(state);
+		doItBtn.setEnabled(state);
 	}
 	
 	/**
@@ -517,8 +553,9 @@ public class ImageCopyrighter extends JFrame implements ActionListener {
 		ImageConf imgConf = new ImageConf(img, orientCbx.getSelectedIndex());
 		imgConf.setFont(fontCbx.getSelectedFont(0, fontSize));
 		imgConf.setText(textField.getText());
-	
-		//Draw copyright
+		/*
+		 * Draw copyright
+		 */
 		Graphics2D g2d = (Graphics2D) img.getGraphics();
 		g2d.setFont(imgConf.getFont());
 		if (logo != null) {
@@ -539,22 +576,26 @@ public class ImageCopyrighter extends JFrame implements ActionListener {
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		String aCommand = e.getActionCommand();
-		
-		//Select files Buton
+		/*
+		 * Select files Buton
+		 */
 		if (aCommand.equalsIgnoreCase("selectFilesBtn")) {
 			ImageFileChooser ifc = new ImageFileChooser(null);
-			ifc.showOpenDialog(null);
-			files = ifc.getSelectedFiles();
-			if (files.length == 0) return;
+			if (ifc.showOpenDialog(null) != JFileChooser.APPROVE_OPTION) {
+				files = null;
+				return;
+			} else files = ifc.getSelectedFiles();
 			
 			imgList.setImgIconed(s.readBoolean("useIconedList"));
 			progress.setVisible(true);
+			progress.setStringPainted(false);
 			progress.setIndeterminate(true);
 			infoLb.setText("Загрузка изображений ...");
 			
 			SwingWorker<Void, Void> filesLoader = new SwingWorker<Void, Void>() {
 				@Override
 				protected Void doInBackground() {
+					enableControls(false);
 					try {
 						imgList.setElements(files);
 					} catch (Exception e) {e.printStackTrace();}
@@ -563,41 +604,51 @@ public class ImageCopyrighter extends JFrame implements ActionListener {
 						progress.setVisible(false);
 						infoLb.setText("");
 					}
+					enableControls(true);
 					return null;
 				}
 			};
 			filesLoader.execute();
 		}
-		
-		//Select font size & color
+		/*
+		 * Select font size & color
+		 */
 		if (aCommand.equalsIgnoreCase("colorSizeBtn")) {
 			JButton colorSizeButton = (JButton) e.getSource();
 			new FontColorSizeDialog(this, fontColor, fontSize);
 			colorSizeButton.setIcon(get32х16IconFromFontColorAndSize(fontColor, fontSize));
-			
-			//Generate event for recreating preview 
+			/*
+			 * Generate event for recreating preview 
+			 */
 			ListSelectionListener lsl = imgList.getListSelectionListeners()[0];
 			ListSelectionEvent lse = new ListSelectionEvent(imgList, 0, 0, false);
 			lsl.valueChanged(lse);
 		}
-		
-		//Select font 
+		/*
+		 * Select font 
+		 */
 		if (aCommand.equalsIgnoreCase("fontCbx")) {
-			//Generate event for recreating preview 
+			/*
+			 * Generate event for recreating preview 
+			 */
 			ListSelectionListener lsl = imgList.getListSelectionListeners()[0];
 			ListSelectionEvent lse = new ListSelectionEvent(imgList, 0, 0, false);
 			lsl.valueChanged(lse);
 		}
-		
-		//Orientation changes
+		/*
+		 * Orientation changes
+		 */
 		if (aCommand.equalsIgnoreCase("orientCbx")) {
-			//Generate event for recreating preview 
+			/*
+			 * Generate event for recreating preview 
+			 */
 			ListSelectionListener lsl = imgList.getListSelectionListeners()[0];
 			ListSelectionEvent lse = new ListSelectionEvent(imgList, 0, 0, false);
 			lsl.valueChanged(lse);
 		}
-		
-		//Select logo
+		/*
+		 * Select logo
+		 */
 		if (aCommand.equalsIgnoreCase("logoBtn")) {
 			JButton logoBtn = (JButton) e.getSource();
 			ImageFileChooser ifc = new ImageFileChooser(null);
@@ -617,7 +668,9 @@ public class ImageCopyrighter extends JFrame implements ActionListener {
 				logoBtn.setText("Выбрать логотип");
 				logo = null;
 			}
-			//Generate event for recreating preview 
+			/*
+			 * Generate event for recreating preview 
+			 */
 			ListSelectionListener lsl = imgList.getListSelectionListeners()[0];
 			ListSelectionEvent lse = new ListSelectionEvent(imgList, 0, 0, false);
 			lsl.valueChanged(lse);
